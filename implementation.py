@@ -4,8 +4,7 @@ import heapq
 
 def find_neighbors(node: tuple, nodes: list, max_row: int, max_col: int) -> list:
     neighbors = []
-    row = node[0]
-    col = node[1]
+    row,col = node
     if (row+1 < max_row and nodes[row+1][col]!=0):
         neighbors.append((row+1,col))
     if (row-1 >= 0 and nodes[row-1][col]!=0):
@@ -29,7 +28,7 @@ def dijkstra(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int , w
     cost[start] = 0
 
     while len(hq)>0:
-        current: tuple = heapq.heappop(hq)
+        current: tuple = heapq.heappop(hq)[1]
 
         if current == end:
             break
