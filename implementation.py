@@ -28,7 +28,7 @@ def dijkstra(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int , w
     #came_from[start] = None
     cost[start] = 0
 
-    while not hq:
+    while len(hq)>0:
         current: tuple = heapq.heappop(hq)
 
         if current == end:
@@ -43,6 +43,8 @@ def dijkstra(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int , w
                 heapq.heappush(hq, (priority, neighbor))
                 came_from[neighbor] = current
                 window[neighbor].update(button_color=("black", "orange"))
+                print("OVDJE")
+    print("KRAJ DIJKSTRE")
     reconstruct_path(came_from, start, end, window)
 
 def reconstruct_path(came_from: dict[tuple, tuple], start: tuple, end: tuple, window):

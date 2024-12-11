@@ -1,5 +1,6 @@
 import PySimpleGUI as sg
-import implementation
+
+from implementation import *
 
 COL_COUNT = 25
 ROW_COUNT = 15
@@ -119,5 +120,8 @@ while True:
             disable_enable(window, False, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-A*-', '-DIJKSTRA-', '-OP-', '-DONE-')
             BIRANJE_KRAJA = False
             window[event].update("Odaberi kraj")
+
+    if event == '-DIJKSTRA-':
+        dijkstra(nodes, start, end, ROW_COUNT, COL_COUNT, window)
 
 window.close()
