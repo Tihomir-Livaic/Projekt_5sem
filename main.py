@@ -1,4 +1,5 @@
 import PySimpleGUI as sg
+import implementation
 
 COL_COUNT = 25
 ROW_COUNT = 15
@@ -7,6 +8,7 @@ def disable_enable(windows, disabled, *args):
     for arg in args:
         windows[arg].update(disabled=disabled)
 
+nodes = [[1 for _ in range(COL_COUNT)] for _ in range(ROW_COUNT)]
 
 layout = [[sg.Text("UREĐIVANJE MAPE: "), sg.Button("Dodavanje zidova", key='-DZ-'),
            sg.VerticalSeparator(),
@@ -20,7 +22,7 @@ layout += [[sg.Text("KONFIGURACIJA ALGORITMA: "),
             sg.VerticalSeparator(),
             sg.Button("A*", disabled=True, key='-A*-'), sg.Button("Dijkstra", disabled=True, key='-DIJKSTRA-')]]
 layout += [
-    [sg.Button("1", size=(4, 2), pad=(0, 0), border_width=1, metadata=1, key=(row + 1, col + 1))
+    [sg.Button("1", size=(4, 2), pad=(0, 0), border_width=1, metadata=1, key=(row, col))
      for col in range(COL_COUNT)] for row in range(ROW_COUNT)]
 
 # inicijalizacija nekih varijabli
@@ -79,6 +81,7 @@ while True:
         if window[event].metadata != 0:
             if DODAVANJE_ELEVACIJE == True:
                 window[event].update(round(elevation))
+                nodes[event[0]][event[1]] = elevation
 
             elif BIRANJE_POCETKA:
                 window[event].update(button_color=("black", "yellow"))
