@@ -21,10 +21,10 @@ layout += [[sg.Text("KONFIGURACIJA ALGORITMA: "),
             sg.Button("Odaberi početak", key='-OP-'),
             sg.Button("Odaberi kraj", key='-OK-'), sg.Button("Gotovo", key='-DONE-', metadata=0),
             sg.VerticalSeparator(),
-            sg.Button("A*", disabled=True, key='-A*-'), sg.Button("Dijkstra", disabled=True, key='-DIJKSTRA-')]]
-layout += [
-    [sg.Button("1", size=(4, 2), pad=(0, 0), border_width=1, metadata=1, key=(row, col))
-     for col in range(COL_COUNT)] for row in range(ROW_COUNT)]
+            sg.Button("A*", disabled=True, key='-A*-'), sg.Button("Dijkstra", disabled=True, key='-DIJKSTRA-'),
+            sg.Button("Reset", disabled=True, key='-RESET-')]]
+layout += [[sg.Button("1", size=(4, 2), pad=(0, 0), border_width=1, metadata=1, key=(row, col))
+            for col in range(COL_COUNT)] for row in range(ROW_COUNT)]
 
 # inicijalizacija nekih varijabli
 DODAVANJE_ZIDOVA = False
@@ -75,9 +75,11 @@ while True:
             if window[event].ButtonColor == ('#FFFFFF', '#283b5b'):
                 window[event].update(button_color=("black", "black"))
                 window[event].metadata = 0
+                nodes[event[0]][event[1]] = 0
             else:
                 window[event].update(button_color=sg.DEFAULT_BUTTON_COLOR)
                 window[event].metadata = int(window[event].ButtonText)
+                nodes[event[0]][event[1]] = int(window[event].ButtonText)
 
         if window[event].metadata != 0:
             if DODAVANJE_ELEVACIJE == True:
@@ -130,7 +132,20 @@ while True:
             BIRANJE_KRAJA = False
             window[event].update("Odaberi kraj")
 
-    if event == '-DIJKSTRA-':
+    elif event == '-DIJKSTRA-':
         dijkstra(nodes, start, end, ROW_COUNT, COL_COUNT, window)
+        disable_enable(window, False, '-RESET-')
+        disable_enable(window, True, '-DONE-')
+
+    elif event == '-RESET-':
+        for row in range(ROW_COUNT):
+            for col in range(COL_COUNT):
+                if window[(row,col)].metadata != 0:
+                    window[(row, col)].update(button_color=sg.DEFAULT_BUTTON_COLOR)
+        window[start].update(button_color=("black", "yellow"))
+        window[end].update(button_color=("black", "orange"))
+        window['-DONE-'].update("Gotovo")
+        disable_enable(window, False, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OK-', '-OP-', '-DONE-')
+        disable_enable(window, True, '-DIJKSTRA-', '-A*-')
 
 window.close()

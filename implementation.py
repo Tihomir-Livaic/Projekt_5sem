@@ -8,7 +8,7 @@ def find_neighbors(node: tuple, nodes: list, max_row: int, max_col: int) -> list
     if (row+1 < max_row and nodes[row+1][col]!=0):
         neighbors.append((row+1,col))
     if (row-1 >= 0 and nodes[row-1][col]!=0):
-        neighbors.append((row,col+1))
+        neighbors.append((row-1,col))
     if (col+1 < max_col and nodes[row][col+1]!=0):
         neighbors.append((row,col+1))
     if (col-1 >= 0 and nodes[row][col-1]!=0):
