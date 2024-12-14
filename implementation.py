@@ -1,5 +1,9 @@
 import heapq
 import string
+from datetime import timedelta
+
+from PySimpleGUI import timer_start, timer_stop, timer_stop_usec
+
 
 def create_orange_color_dict() -> dict[int, string]:
     colors: dict[int, string] = {}
@@ -37,6 +41,8 @@ def dijkstra(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int , w
     cost[start] = 0
     colors = create_orange_color_dict()
 
+    timer_start()
+
     while len(hq)>0:
         #current: tuple = heapq.heappop(hq)[1]
         elem = heapq.heappop(hq)[1]
@@ -56,6 +62,7 @@ def dijkstra(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int , w
                 #print(colors[color], " ", type(colors[color]))
                 window[neighbor].update(button_color=("black", colors[color]))
         #color+=1
+    print(timedelta(microseconds=timer_stop_usec()).total_seconds())
     reconstruct_path(came_from, start, end, window)
 
 def reconstruct_path(came_from: dict[tuple, tuple], start: tuple, end: tuple, window):
