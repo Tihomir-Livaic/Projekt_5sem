@@ -1,5 +1,5 @@
 import string
-
+import json
 import PySimpleGUI as sg
 
 from implementation import dijkstra
@@ -28,7 +28,10 @@ def create_blue_color_dict():
 
 nodes = [[1 for _ in range(COL_COUNT)] for _ in range(ROW_COUNT)]
 
-layout = [[sg.Text("UREĐIVANJE MAPE: "), sg.Button("Dodavanje zidova", key='-DZ-'),
+menu_def = [['File', ['Load map', 'Save map']], ['Help']]
+
+layout = [[sg.Menu(menu_def, key="-MENU-")]]
+layout += [[sg.Text("UREĐIVANJE MAPE: "), sg.Button("Dodavanje zidova", key='-DZ-'),
            sg.VerticalSeparator(),
            sg.Text("ELEVACIJA POLJA: "),
            sg.Slider(range=(1, 10), resolution=1, orientation='h', key='-ES-', enable_events=True),
@@ -90,7 +93,7 @@ while True:
 
     elif isinstance(event, tuple):
         if DODAVANJE_ZIDOVA == True and event != start and event != end:
-            if window[event].ButtonColor == ('#FFFFFF', '#283b5b'):
+            if nodes[event[0]][event[1]] != 0:
                 window[event].update(button_color=("black", "black"))
                 #window[event].metadata = 0
                 nodes[event[0]][event[1]] = 0
@@ -169,5 +172,67 @@ while True:
         window['-DONE-'].metadata = 0
         disable_enable(window, False, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OK-', '-OP-', '-DONE-')
         disable_enable(window, True, '-DIJKSTRA-', '-A*-')
+
+    elif event == 'Save map':
+        if start == (-1, -1) and end == (-1 ,-1):
+            sg.popup("Definicija mape nije gotova, dodajte početak i kraj prije spremanja", title="Pogreška pri spremanju")
+        else:
+            file_path = sg.popup_get_file("Save As", save_as=True, file_types=(("JSON Files", "*.json"),))
+            if file_path:
+                # Ensure the file ends with .json
+                if not file_path.endswith(".json"):
+                    file_path += ".json"
+                # Save the list to the JSON file
+                json_file = {
+                    "nodes": nodes,
+                    "start": start,
+                    "end": end
+                }
+                with open(file_path, "w") as f:
+                    json.dump(json_file, f) #type: ignore
+                sg.popup("List saved successfully!")
+
+    elif event == 'Load map':
+        file_path = sg.popup_get_file("Open File", file_types=(("JSON Files", "*.json"),))
+        if file_path:
+            try:
+                with open(file_path, "r") as f:
+                    data = json.load(f)  # Load the list from the JSON file
+                json_nodes: list = data.get("nodes", [])
+                if len(json_nodes) == ROW_COUNT and len(json_nodes[1]) == COL_COUNT:
+                    nodes = json_nodes
+                    start_list = data.get("start", (-1, -1))
+                    start = (start_list[0], start_list[1])
+                    end_list = data.get("end", (-1, -1))
+                    end = (end_list[0], end_list[1])
+                    for row in range(ROW_COUNT):
+                        for col in range(COL_COUNT):
+                            if nodes[row][col] == 0:
+                                window[(row, col)].metadata = 1
+                                window[(row, col)].update(".")
+                                window[(row, col)].update(button_color=("black", "black"))
+
+                            elif nodes[row][col] == 1:
+                                window[(row, col)].metadata = 1
+                                window[(row, col)].update(".")
+                                window[(row, col)].update(button_color=("white", color_dict[window[(row, col)].metadata]))
+
+                            else:
+                                window[(row, col)].metadata = nodes[row][col]
+                                window[(row, col)].update(nodes[row][col])
+                                window[(row, col)].update(button_color=("white", color_dict[window[(row, col)].metadata]))
+
+                    window[start].update(button_color=("black", "yellow"))
+                    window[end].update(button_color=("black", "orange"))
+                    window['-DONE-'].update("Gotovo")
+                    window['-DONE-'].metadata = 0
+                    disable_enable(window, False, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OK-', '-OP-', '-DONE-')
+                    disable_enable(window, True, '-DIJKSTRA-', '-A*-')
+                    sg.popup("List loaded successfully!")
+
+                else:
+                    sg.popup("Broj redaka i stupaca ne poklapa se")
+            except Exception as e:
+                sg.popup_error(f"Failed to load file: {e}")
 
 window.close()
