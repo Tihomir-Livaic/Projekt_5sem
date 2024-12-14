@@ -1,3 +1,5 @@
+import string
+
 import PySimpleGUI as sg
 
 from implementation import dijkstra
@@ -8,6 +10,21 @@ ROW_COUNT = 15
 def disable_enable(windows, disabled, *args):
     for arg in args:
         windows[arg].update(disabled=disabled)
+
+def create_blue_color_dict():
+    colors: dict[int, string] = {}
+    colors[1] = "#283B5B"
+    colors[2] = "#243655"
+    colors[3] = "#21324F"
+    colors[4] = "#1E2E4A"
+    colors[5] = "#1A2944"
+    colors[6] = "#17253E"
+    colors[7] = "#142139"
+    colors[8] = "#101C33"
+    colors[9] = "#0D182D"
+    colors[10] = "#0A1428"
+
+    return colors
 
 nodes = [[1 for _ in range(COL_COUNT)] for _ in range(ROW_COUNT)]
 
@@ -23,7 +40,7 @@ layout += [[sg.Text("KONFIGURACIJA ALGORITMA: "),
             sg.VerticalSeparator(),
             sg.Button("A*", disabled=True, key='-A*-'), sg.Button("Dijkstra", disabled=True, key='-DIJKSTRA-'),
             sg.Button("Reset", disabled=True, key='-RESET-')]]
-layout += [[sg.Button("1", size=(4, 2), pad=(0, 0), border_width=1, metadata=1, key=(row, col))
+layout += [[sg.Button(".", size=(4, 2), pad=(0, 0), border_width=1, metadata=1, key=(row, col))
             for col in range(COL_COUNT)] for row in range(ROW_COUNT)]
 
 # inicijalizacija nekih varijabli
@@ -33,6 +50,7 @@ BIRANJE_POCETKA = False
 BIRANJE_KRAJA = False
 start = end = (-1, -1)
 elevation = 1
+color_dict = create_blue_color_dict()
 
 window = sg.Window("Početak", layout, finalize=True)
 
@@ -74,17 +92,19 @@ while True:
         if DODAVANJE_ZIDOVA == True and event != start and event != end:
             if window[event].ButtonColor == ('#FFFFFF', '#283b5b'):
                 window[event].update(button_color=("black", "black"))
-                window[event].metadata = 0
+                #window[event].metadata = 0
                 nodes[event[0]][event[1]] = 0
             else:
                 window[event].update(button_color=sg.DEFAULT_BUTTON_COLOR)
-                window[event].metadata = int(window[event].ButtonText)
-                nodes[event[0]][event[1]] = int(window[event].ButtonText)
+                #window[event].metadata = 1 if window[event].ButtonText=="." else int(window[event].ButtonText)
+                nodes[event[0]][event[1]] = 1 if window[event].ButtonText=="." else int(window[event].ButtonText)
 
-        if window[event].metadata != 0:
+        if nodes[event[0]][event[1]] != 0:
             if DODAVANJE_ELEVACIJE == True:
-                window[event].update(round(elevation))
-                nodes[event[0]][event[1]] = elevation
+                window[event].update(button_color=("white", color_dict[elevation]))
+                nodes[event[0]][event[1]] = round(elevation)
+                window[event].update(round(elevation) if elevation > 1 else ".")
+                window[event].metadata = round(elevation)
 
             elif BIRANJE_POCETKA:
                 window[event].update(button_color=("black", "yellow"))
@@ -140,11 +160,13 @@ while True:
     elif event == '-RESET-':
         for row in range(ROW_COUNT):
             for col in range(COL_COUNT):
-                if window[(row,col)].metadata != 0:
-                    window[(row, col)].update(button_color=sg.DEFAULT_BUTTON_COLOR)
+                if nodes[row][col] != 0:
+                    print(color_dict[window[(row,col)].metadata])
+                    window[(row, col)].update(button_color=("white", color_dict[window[(row,col)].metadata]))
         window[start].update(button_color=("black", "yellow"))
         window[end].update(button_color=("black", "orange"))
         window['-DONE-'].update("Gotovo")
+        window['-DONE-'].metadata = 0
         disable_enable(window, False, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OK-', '-OP-', '-DONE-')
         disable_enable(window, True, '-DIJKSTRA-', '-A*-')
 
