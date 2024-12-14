@@ -42,7 +42,8 @@ layout += [[sg.Text("KONFIGURACIJA ALGORITMA: "),
             sg.Button("Odaberi kraj", key='-OK-'), sg.Button("Gotovo", key='-DONE-', metadata=0),
             sg.VerticalSeparator(),
             sg.Button("A*", disabled=True, key='-A*-'), sg.Button("Dijkstra", disabled=True, key='-DIJKSTRA-'),
-            sg.Button("Reset", disabled=True, key='-RESET-')]]
+            sg.Button("Reset", disabled=True, key='-RESET-'),
+            sg.Text("", key='-VRIJEME-', visible=False)]]
 layout += [[sg.Button(".", size=(4, 2), pad=(0, 0), border_width=1, metadata=1, key=(row, col))
             for col in range(COL_COUNT)] for row in range(ROW_COUNT)]
 
@@ -170,6 +171,7 @@ while True:
         window[end].update(button_color=("black", "orange"))
         window['-DONE-'].update("Gotovo")
         window['-DONE-'].metadata = 0
+        window['-VRIJEME-'].update(visible=False)
         disable_enable(window, False, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OK-', '-OP-', '-DONE-')
         disable_enable(window, True, '-DIJKSTRA-', '-A*-')
 

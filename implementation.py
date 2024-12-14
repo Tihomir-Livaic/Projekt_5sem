@@ -1,8 +1,7 @@
 import heapq
 import string
-from datetime import timedelta
 
-from PySimpleGUI import timer_start, timer_stop, timer_stop_usec
+from PySimpleGUI import timer_start, timer_stop_usec
 
 
 def create_orange_color_dict() -> dict[int, string]:
@@ -62,7 +61,8 @@ def dijkstra(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int , w
                 #print(colors[color], " ", type(colors[color]))
                 window[neighbor].update(button_color=("black", colors[color]))
         #color+=1
-    print(timedelta(microseconds=timer_stop_usec()).total_seconds())
+    window['-VRIJEME-'].update("Vrijeme izvođenja: " + str(timer_stop_usec()/1000000) + "s")
+    window['-VRIJEME-'].update(visible = True)
     reconstruct_path(came_from, start, end, window)
 
 def reconstruct_path(came_from: dict[tuple, tuple], start: tuple, end: tuple, window):
