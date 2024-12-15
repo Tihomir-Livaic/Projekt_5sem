@@ -1,6 +1,6 @@
 import heapq
 import string
-
+#import time
 from PySimpleGUI import timer_start, timer_stop_usec
 
 
@@ -31,7 +31,7 @@ def heuristic(current: tuple, end: tuple):
 
     return 0
 
-def dijkstra(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int , window):
+def dijkstra(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int, window):
     hq = []
     heapq.heappush(hq, (0, (start, 1)))
     came_from: dict[tuple, tuple] = {}
@@ -60,7 +60,7 @@ def dijkstra(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int , w
                 came_from[neighbor] = current
                 #print(colors[color], " ", type(colors[color]))
                 window[neighbor].update(button_color=("black", colors[color]))
-        #color+=1
+
     window['-VRIJEME-'].update("Vrijeme izvođenja: " + str(timer_stop_usec()/1000000) + "s")
     window['-VRIJEME-'].update(visible = True)
     reconstruct_path(came_from, start, end, window)

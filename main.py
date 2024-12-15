@@ -58,9 +58,9 @@ color_dict = create_blue_color_dict()
 
 window = sg.Window("Početak", layout, finalize=True)
 
-# for col in range(20):
-#    for row in range(10):
-#        window[(row+1, col+1)].bind("<B1-Motion>", '')
+#for col in range(ROW_COUNT):
+#    for row in range(COL_COUNT):
+#        window[(row, col)].bind("<B1-Motion>", '+')
 
 
 while True:
@@ -177,7 +177,7 @@ while True:
 
     elif event == 'Save map':
         if start == (-1, -1) and end == (-1 ,-1):
-            sg.popup("Definicija mape nije gotova, dodajte početak i kraj prije spremanja", title="Pogreška pri spremanju")
+            sg.popup("Definicija mape nije gotova, dodajte početak i kraj prije spremanja.", title="Pogreška pri spremanju")
         else:
             file_path = sg.popup_get_file("Save As", save_as=True, file_types=(("JSON Files", "*.json"),))
             if file_path:
