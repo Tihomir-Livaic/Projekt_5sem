@@ -1,14 +1,15 @@
 import heapq
 import string
-#import time
+import time
+
 from PySimpleGUI import timer_start, timer_stop_usec
 
 
 def create_orange_color_dict() -> dict[int, string]:
     colors: dict[int, string] = {}
     hex_code = "0xFFF000"
-    print(int(hex_code, 16))
-    for i in range (1, 41):
+    #print(int(hex_code, 16))
+    for i in range (1, 100):
         colors[i] = "#" + hex_code[2:]
         hex_code = hex(int(hex_code, 16) - 1024)
 
@@ -31,15 +32,15 @@ def heuristic(current: tuple, end: tuple):
 
     return 0
 
-def dijkstra(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int, window):
+def dijkstra(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int, sleep: bool, window):
     hq = []
     heapq.heappush(hq, (0, (start, 1)))
     came_from: dict[tuple, tuple] = {}
-    cost: dict[tuple, float] = {}
+    cost: dict[tuple, float] = {start: 0}
     #came_from[start] = None
-    cost[start] = 0
     colors = create_orange_color_dict()
-
+    window[start].update("START")
+    window[end].update("STOP")
     timer_start()
 
     while len(hq)>0:
@@ -49,7 +50,10 @@ def dijkstra(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int, wi
 
         if current == end:
             break
-
+        text_color, background_color = window[current].ButtonColor
+        window[current].update(button_color=("black", "blue"))
+        window.refresh()
+        time.sleep(0.25 if sleep else 0)
         neighbors: list = find_neighbors(current, nodes, max_row, max_col)
         for neighbor in neighbors:
             new_cost = cost[current] + nodes[neighbor[0]][neighbor[1]]      #moze se dogoditi da se doda vec postojeci node
@@ -60,9 +64,12 @@ def dijkstra(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int, wi
                 came_from[neighbor] = current
                 #print(colors[color], " ", type(colors[color]))
                 window[neighbor].update(button_color=("black", colors[color]))
-
-    window['-VRIJEME-'].update("Vrijeme izvođenja: " + str(timer_stop_usec()/1000000) + "s")
-    window['-VRIJEME-'].update(visible = True)
+        window.refresh()
+        time.sleep(0.25 if sleep else 0)
+        window[current].update(button_color=(text_color, background_color))
+    if not sleep:
+        window['-VRIJEME-'].update("Vrijeme izvođenja: " + str(timer_stop_usec()/1000000) + "s")
+        window['-VRIJEME-'].update(visible = True)
     reconstruct_path(came_from, start, end, window)
 
 def reconstruct_path(came_from: dict[tuple, tuple], start: tuple, end: tuple, window):

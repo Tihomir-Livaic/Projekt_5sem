@@ -64,8 +64,8 @@ window = sg.Window("Početak", layout, finalize=True)
 
 
 while True:
-    event, values = window.read()
-    print(event, values)
+    event, values = window.read(timeout=10)
+    #print(event, values)
     if event in (sg.WIN_CLOSED, 'Exit'):
         break
     if event == '-DZ-':
@@ -80,7 +80,7 @@ while True:
 
     elif event == '-ES-':
         elevation = values['-ES-']
-        print(elevation)
+        #print(elevation)
 
     elif event == '-DE-':
         if DODAVANJE_ELEVACIJE == False:
@@ -99,7 +99,7 @@ while True:
                 #window[event].metadata = 0
                 nodes[event[0]][event[1]] = 0
             else:
-                window[event].update(button_color=sg.DEFAULT_BUTTON_COLOR)
+                window[event].update(button_color=("white", color_dict[window[event].metadata]))
                 #window[event].metadata = 1 if window[event].ButtonText=="." else int(window[event].ButtonText)
                 nodes[event[0]][event[1]] = 1 if window[event].ButtonText=="." else int(window[event].ButtonText)
 
@@ -111,18 +111,34 @@ while True:
                 window[event].metadata = round(elevation)
 
             elif BIRANJE_POCETKA:
-                window[event].update(button_color=("black", "yellow"))
-                event: tuple
-                if start != (-1, -1):
-                    window[start].update(button_color=sg.DEFAULT_BUTTON_COLOR)
-                start = event
+                if event == start:
+                    if window[event].ButtonColor == ("black", "yellow"):
+                        window[event].update(button_color=("white", color_dict[window[event].metadata]))
+                        start = (-1, -1)
+                    else:
+                        window[event].update(button_color=("black", "yellow"))
+                        start = event
+                else:
+                    window[event].update(button_color=("black", "yellow"))
+                    event: tuple
+                    if start != (-1, -1):
+                        window[start].update(button_color=("white", color_dict[window[start].metadata]))
+                    start = event
 
             elif BIRANJE_KRAJA:
-                window[event].update(button_color=("black", "red"))
-                event: tuple
-                if end != (-1, -1):
-                    window[end].update(button_color=sg.DEFAULT_BUTTON_COLOR)
-                end = event
+                if event == end:
+                    if window[event].ButtonColor == ("black", "red"):
+                        window[event].update(button_color=("white", color_dict[window[event].metadata]))
+                        end = (-1, -1)
+                    else:
+                        window[event].update(button_color=("black", "red"))
+                        end = event
+                else:
+                    window[event].update(button_color=("black", "red"))
+                    event: tuple
+                    if end != (-1, -1):
+                        window[end].update(button_color=("white", color_dict[window[end].metadata]))
+                    end = event
 
     elif event == '-DONE-':
         if window[event].metadata == 0 and start != (-1, -1) and end != (-1, -1):
@@ -157,7 +173,7 @@ while True:
             window[event].update("Odaberi kraj")
 
     elif event == '-DIJKSTRA-':
-        dijkstra(nodes, start, end, ROW_COUNT, COL_COUNT, window)
+        dijkstra(nodes, start, end, ROW_COUNT, COL_COUNT, values['-CHECK-'], window)
         disable_enable(window, False, '-RESET-')
         disable_enable(window, True, '-DONE-')
 
@@ -165,10 +181,12 @@ while True:
         for row in range(ROW_COUNT):
             for col in range(COL_COUNT):
                 if nodes[row][col] != 0:
-                    print(color_dict[window[(row,col)].metadata])
+                    #print(color_dict[window[(row,col)].metadata])
                     window[(row, col)].update(button_color=("white", color_dict[window[(row,col)].metadata]))
         window[start].update(button_color=("black", "yellow"))
-        window[end].update(button_color=("black", "orange"))
+        window[start].update("." if window[start].metadata == 1 else window[start].metadata)
+        window[end].update(button_color=("black", "red"))
+        window[end].update("." if window[end].metadata == 1 else window[end].metadata)
         window['-DONE-'].update("Gotovo")
         window['-DONE-'].metadata = 0
         window['-VRIJEME-'].update(visible=False)
@@ -176,7 +194,7 @@ while True:
         disable_enable(window, True, '-DIJKSTRA-', '-A*-')
 
     elif event == 'Save map':
-        if start == (-1, -1) and end == (-1 ,-1):
+        if start == (-1, -1) or end == (-1 ,-1):
             sg.popup("Definicija mape nije gotova, dodajte početak i kraj prije spremanja.", title="Pogreška pri spremanju")
         else:
             file_path = sg.popup_get_file("Save As", save_as=True, file_types=(("JSON Files", "*.json"),))
