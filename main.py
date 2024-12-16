@@ -1,8 +1,8 @@
-import string
+#import string
 import json
 import PySimpleGUI as sg
 
-from implementation import dijkstra
+from implementation import *
 
 COL_COUNT = 25
 ROW_COUNT = 15
@@ -43,7 +43,9 @@ layout += [[sg.Text("KONFIGURACIJA ALGORITMA: "),
             sg.VerticalSeparator(),
             sg.Button("A*", disabled=True, key='-A*-'), sg.Button("Dijkstra", disabled=True, key='-DIJKSTRA-'),
             sg.Button("Reset", disabled=True, key='-RESET-'),
-            sg.Text("", key='-VRIJEME-', visible=False)]]
+            sg.Text("", key='-VRIJEME-', visible=False),
+            sg.Button("Pause", key='-PAUSE-', visible=False),
+            sg.Button("Finish", key='-FINISH-', visible=False)]]
 layout += [[sg.Button(".", size=(4, 2), pad=(0, 0), border_width=1, metadata=1, key=(row, col))
             for col in range(COL_COUNT)] for row in range(ROW_COUNT)]
 
@@ -58,14 +60,14 @@ color_dict = create_blue_color_dict()
 
 window = sg.Window("Početak", layout, finalize=True)
 
-#for col in range(ROW_COUNT):
-#    for row in range(COL_COUNT):
-#        window[(row, col)].bind("<B1-Motion>", '+')
+#for row in range(ROW_COUNT):
+#    for col in range(COL_COUNT):
+#        window[(row, col)].bind("<Enter>", '+')
 
 
 while True:
-    event, values = window.read(timeout=10)
-    #print(event, values)
+    event, values = window.read()
+    print(event, values)
     if event in (sg.WIN_CLOSED, 'Exit'):
         break
     if event == '-DZ-':
@@ -173,7 +175,11 @@ while True:
             window[event].update("Odaberi kraj")
 
     elif event == '-DIJKSTRA-':
-        dijkstra(nodes, start, end, ROW_COUNT, COL_COUNT, values['-CHECK-'], window)
+        nodes_colors, no_of_colors, path = graph_search(nodes, start, end, ROW_COUNT, COL_COUNT, values['-CHECK-'], window)
+        if not values['-CHECK-']:
+            color_graph(nodes_colors, no_of_colors, path, window)
+        else:
+            color_graph_pausable(nodes_colors, no_of_colors, path, window)
         disable_enable(window, False, '-RESET-')
         disable_enable(window, True, '-DONE-')
 
