@@ -129,14 +129,14 @@ while True:
 
             elif BIRANJE_KRAJA:
                 if event == end:
-                    if window[event].ButtonColor == ("black", "red"):
+                    if window[event].ButtonColor == ("black", "green"):
                         window[event].update(button_color=("white", color_dict[window[event].metadata]))
                         end = (-1, -1)
                     else:
-                        window[event].update(button_color=("black", "red"))
+                        window[event].update(button_color=("black", "green"))
                         end = event
                 else:
-                    window[event].update(button_color=("black", "red"))
+                    window[event].update(button_color=("black", "green"))
                     event: tuple
                     if end != (-1, -1):
                         window[end].update(button_color=("white", color_dict[window[end].metadata]))
@@ -175,7 +175,7 @@ while True:
             window[event].update("Odaberi kraj")
 
     elif event == '-DIJKSTRA-':
-        nodes_colors, no_of_colors, path = graph_search(nodes, start, end, ROW_COUNT, COL_COUNT, values['-CHECK-'], window)
+        nodes_colors, no_of_colors, path = graph_search(nodes, start, end, ROW_COUNT, COL_COUNT, window)
         if not values['-CHECK-']:
             color_graph(nodes_colors, no_of_colors, path, window)
         else:
@@ -191,13 +191,13 @@ while True:
                     window[(row, col)].update(button_color=("white", color_dict[window[(row,col)].metadata]))
         window[start].update(button_color=("black", "yellow"))
         window[start].update("." if window[start].metadata == 1 else window[start].metadata)
-        window[end].update(button_color=("black", "red"))
+        window[end].update(button_color=("black", "green"))
         window[end].update("." if window[end].metadata == 1 else window[end].metadata)
         window['-DONE-'].update("Gotovo")
         window['-DONE-'].metadata = 0
         window['-VRIJEME-'].update(visible=False)
         disable_enable(window, False, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OK-', '-OP-', '-DONE-')
-        disable_enable(window, True, '-DIJKSTRA-', '-A*-')
+        disable_enable(window, True, '-DIJKSTRA-', '-A*-', '-RESET-')
 
     elif event == 'Save map':
         if start == (-1, -1) or end == (-1 ,-1):
@@ -216,7 +216,7 @@ while True:
                 }
                 with open(file_path, "w") as f:
                     json.dump(json_file, f) #type: ignore
-                sg.popup("List saved successfully!")
+                sg.popup("Map saved successfully!")
 
     elif event == 'Load map':
         file_path = sg.popup_get_file("Open File", file_types=(("JSON Files", "*.json"),))
@@ -249,12 +249,12 @@ while True:
                                 window[(row, col)].update(button_color=("white", color_dict[window[(row, col)].metadata]))
 
                     window[start].update(button_color=("black", "yellow"))
-                    window[end].update(button_color=("black", "orange"))
+                    window[end].update(button_color=("black", "green"))
                     window['-DONE-'].update("Gotovo")
                     window['-DONE-'].metadata = 0
                     disable_enable(window, False, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OK-', '-OP-', '-DONE-')
                     disable_enable(window, True, '-DIJKSTRA-', '-A*-')
-                    sg.popup("List loaded successfully!")
+                    sg.popup("Map loaded successfully!")
 
                 else:
                     sg.popup("Broj redaka i stupaca ne poklapa se")

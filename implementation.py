@@ -31,7 +31,7 @@ def find_neighbors(node: tuple, nodes: list, max_row: int, max_col: int) -> list
 #
 #    return 0
 
-def graph_search(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int, sleep: bool, window):
+def graph_search(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int, window):
     hq = []
     heapq.heappush(hq, (0, (start, 1)))
     came_from: dict[tuple, tuple] = {}
@@ -117,7 +117,6 @@ def color_graph_pausable(nodes_colors: list, no_of_colors: int, path: list, wind
                 window[node].update(button_color=("black", node_color))
         else:
             window[node].update(button_color=("black", node_color))
-    window['-FINISH-'].update(visible=True)
     for node in path:
         window[node].update(button_color=("black", "green"))
 
