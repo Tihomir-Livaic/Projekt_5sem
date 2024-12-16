@@ -42,8 +42,9 @@ layout += [[sg.Text("KONFIGURACIJA ALGORITMA: "),
             sg.Button("Odaberi kraj", key='-OK-'), sg.Button("Gotovo", key='-DONE-', metadata=0),
             sg.VerticalSeparator(),
             sg.Button("A*", disabled=True, key='-A*-'), sg.Button("Dijkstra", disabled=True, key='-DIJKSTRA-'),
-            sg.Button("Reset", disabled=True, key='-RESET-'),
-            sg.Text("", key='-VRIJEME-', visible=False),
+            sg.Button("Reset", disabled=True, key='-RESET-')],
+            [sg.Text("", key='-VRIJEME-', visible=False),
+             sg.Text("" ,size=(1,2)),
             sg.Button("Pause", key='-PAUSE-', visible=False),
             sg.Button("Finish", key='-FINISH-', visible=False)]]
 layout += [[sg.Button(".", size=(4, 2), pad=(0, 0), border_width=1, metadata=1, key=(row, col))
