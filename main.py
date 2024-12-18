@@ -165,14 +165,17 @@ while True:
             window[event].update("Odaberi kraj")
 
     elif event == '-DIJKSTRA-':
-        nodes_colors, no_of_colors, path = graph_search(nodes, start, end, ROW_COUNT, COL_COUNT, window)
+        nodes_colors, no_of_colors, found_path, path = graph_search(nodes, start, end, ROW_COUNT, COL_COUNT, window)
         print("Number of colors: ", no_of_colors)
-        if not values['-CHECK-']:
-            color_graph(nodes_colors, no_of_colors, path, window)
+        if not found_path:
+            sg.popup("There is no path between the start and end nodes :(", title="No path found")
         else:
-            color_graph_pausable(nodes_colors, no_of_colors, path, window)
-        disable_enable(window, False, '-RESET-')
-        disable_enable(window, True, '-DONE-')
+            if not values['-CHECK-']:
+                color_graph(nodes_colors, no_of_colors, path, window)
+            else:
+                color_graph_pausable(nodes_colors, no_of_colors, path, window)
+            disable_enable(window, False, '-RESET-')
+            disable_enable(window, True, '-DONE-')
 
     elif event == '-RESET-':
         for row in range(ROW_COUNT):

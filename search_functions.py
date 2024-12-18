@@ -70,6 +70,7 @@ def graph_search(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int
     window[end].update("STOP")
     window.refresh()
     nodes_colors: list[tuple] = []
+    found_path = False
     timer_start()
 
     while len(hq)>0:
@@ -77,6 +78,7 @@ def graph_search(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int
         current, color = elem
 
         if current == end:
+            found_path = True
             break
 
         neighbors: list = find_neighbors(current, nodes, max_row, max_col)
@@ -90,10 +92,12 @@ def graph_search(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int
                 came_from[neighbor] = current
 
     vrijeme_izvodenja = timer_stop_usec()
-    window['-VRIJEME-'].update("Vrijeme izvođenja: " + str(vrijeme_izvodenja) + "ms")
-    window['-VRIJEME-'].update(visible = True)
-    path = reconstruct_path(came_from, start, end)
-    return nodes_colors, color, path
+    path = None
+    if found_path:
+        window['-VRIJEME-'].update("Vrijeme izvođenja: " + str(vrijeme_izvodenja) + "ms")
+        window['-VRIJEME-'].update(visible = True)
+        path = reconstruct_path(came_from, start, end)
+    return nodes_colors, color, found_path, path
 
 def color_graph(nodes_colors: list, no_of_colors: int, path: list, window):
     colors = create_orange_color_dict(no_of_colors)
