@@ -35,12 +35,15 @@ layout += [[sg.Text("UREĐIVANJE MAPE: "), sg.Button("Dodavanje zidova", key='-D
            sg.Text("ELEVACIJA POLJA: "),
            sg.Slider(range=(1, 10), resolution=1, orientation='h', key='-ES-', enable_events=True),
            sg.Button("Dodaj elevaciju", key='-DE-')]]
+column = [[sg.Text("Dijkstra            A*      Greedy BFS")],
+          [sg.Slider((-1,1), resolution=0.1, orientation='h', disable_number_display=True, key='-COEFFICIENT-', disabled=True)]]
 layout += [[sg.Text("KONFIGURACIJA ALGORITMA: "),
             sg.Checkbox("Sporije izvođenje", key='-CHECK-', enable_events=True),
             sg.Button("Odaberi početak", key='-OP-'),
-            sg.Button("Odaberi kraj", key='-OK-'), sg.Button("Gotovo", key='-DONE-', metadata=0),
+            sg.Button("Odaberi kraj", key='-OK-'), sg.Button("Gotovo", key='-DONE-', metadata=0, size=(7, None)),
             sg.VerticalSeparator(),
-            sg.Button("A*", disabled=True, key='-A*-'), sg.Button("Dijkstra", disabled=True, key='-DIJKSTRA-'),
+            sg.Column(column, element_justification='center'),
+            sg.Button("Start", disabled=True, key='-START-'),
             sg.Button("Reset", disabled=True, key='-RESET-')],
             [[sg.HorizontalSeparator()]],
             [sg.Text("", key='-VRIJEME-', visible=False),
@@ -133,16 +136,19 @@ while True:
                     end = event
 
     elif event == '-DONE-':
-        if window[event].metadata == 0 and start != (-1, -1) and end != (-1, -1):
-            disable_enable(window, False, '-A*-', '-DIJKSTRA-')
-            disable_enable(window, True, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OK-', '-OP-')
-            window[event].metadata = 1
-            window[event].update("Povratak")
+        if start != (-1, -1) and end != (-1, -1):
+            if window[event].metadata == 0:
+                disable_enable(window, False, '-START-', '-COEFFICIENT-')
+                disable_enable(window, True, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OK-', '-OP-')
+                window[event].metadata = 1
+                window[event].update("Povratak")
+            else:
+                disable_enable(window, True, '-START-', '-COEFFICIENT-')
+                disable_enable(window, False, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OK-', '-OP-')
+                window[event].metadata = 0
+                window[event].update("Gotovo")
         else:
-            disable_enable(window, True, '-A*-', '-DIJKSTRA-')
-            disable_enable(window, False, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OK-', '-OP-')
-            window[event].metadata = 0
-            window[event].update("Gotovo")
+            sg.popup("Odaberite početak i kraj")
 
     elif event == '-OP-':
         if not BIRANJE_POCETKA:
@@ -164,8 +170,8 @@ while True:
             BIRANJE_KRAJA = False
             window[event].update("Odaberi kraj")
 
-    elif event == '-DIJKSTRA-':
-        nodes_colors, no_of_colors, found_path, path = graph_search(nodes, start, end, ROW_COUNT, COL_COUNT, window)
+    elif event == '-START-':
+        nodes_colors, no_of_colors, found_path, path = graph_search(nodes, start, end, ROW_COUNT, COL_COUNT, values['-COEFFICIENT-'], window)
         print("Number of colors: ", no_of_colors)
         if not found_path:
             sg.popup("There is no path between the start and end nodes :(", title="No path found")
@@ -175,7 +181,7 @@ while True:
             else:
                 color_graph_pausable(nodes_colors, no_of_colors, path, window)
             disable_enable(window, False, '-RESET-')
-            disable_enable(window, True, '-DONE-')
+            disable_enable(window, True, '-DONE-', '-COEFFICIENT-', '-START-')
 
     elif event == '-RESET-':
         for row in range(ROW_COUNT):
@@ -191,7 +197,7 @@ while True:
         window['-DONE-'].metadata = 0
         window['-VRIJEME-'].update(visible=False)
         disable_enable(window, False, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OK-', '-OP-', '-DONE-')
-        disable_enable(window, True, '-DIJKSTRA-', '-A*-', '-RESET-')
+        disable_enable(window, True, '-START-', '-RESET-', '-COEFFICIENT-')
 
     elif event == 'Save map':
         if start == (-1, -1) or end == (-1 ,-1):
@@ -247,7 +253,7 @@ while True:
                     window['-DONE-'].update("Gotovo")
                     window['-DONE-'].metadata = 0
                     disable_enable(window, False, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OK-', '-OP-', '-DONE-')
-                    disable_enable(window, True, '-DIJKSTRA-', '-A*-')
+                    disable_enable(window, True, '-START-')
                     sg.popup("Map loaded successfully!")
 
                 else:

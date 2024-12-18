@@ -1,4 +1,5 @@
 import heapq
+import math
 import string
 import time
 from PySimpleGUI import timer_start, timer_stop_usec
@@ -6,7 +7,7 @@ from PySimpleGUI import timer_start, timer_stop_usec
 
 def create_orange_color_dict(no_of_colors: int) -> dict[int, string]:
     colors: dict[int, string] = {}
-    no_of_loops = round(no_of_colors/33)
+    no_of_loops = math.ceil(no_of_colors/33)
     index = 1
     for loops in range(no_of_loops):
         g = 30
@@ -61,7 +62,8 @@ def find_neighbors(node: tuple, nodes: list, max_row: int, max_col: int) -> list
 #
 #    return 0
 
-def graph_search(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int, window):
+def graph_search(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int, coefficient, window):
+    print(coefficient)
     hq = []
     heapq.heappush(hq, (0, (start, 1)))
     came_from: dict[tuple, tuple] = {}
