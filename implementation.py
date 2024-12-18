@@ -6,11 +6,41 @@ from PySimpleGUI import timer_start, timer_stop_usec
 
 def create_orange_color_dict(no_of_colors: int) -> dict[int, string]:
     colors: dict[int, string] = {}
-    hex_code = "0xFFF000"
-    #print(int(hex_code, 16))
-    for i in range (1, 100):
-        colors[i] = "#" + hex_code[2:]
-        hex_code = hex(int(hex_code, 16) - 1024)
+    no_of_loops = round(no_of_colors/33)
+    index = 1
+    for loops in range(no_of_loops):
+        G = 30
+        colors[index] = "#ff0000"
+        index += 1
+        colors[index] = "#ff0f00"
+        index += 1
+        for i in range(1, 17):
+            colors[index] = "#ff" + str(hex(G)[2:]) + "00"
+            index += 1
+            G += 15
+
+        R = 240
+        for i in range(1, 16):
+            colors[index] = "#" + str(hex(R)[2:]) + "ff00"
+            index += 1
+            R -= 15
+        colors[index] = "#0fff00"
+        index += 1
+        colors[index] = "#00ff00"
+        index += 1
+        colors[index] = "#0fff00"
+        index += 1
+        R += 15
+        for i in range(1,17):
+            colors[index] = "#" + str(hex(R)[2:]) + "ff00"
+            index += 1
+            R += 15
+        G = 240
+        for i in range(1, 16):
+            colors[index] = "#ff" + str(hex(G)[2:]) + "00"
+            index += 1
+            G -= 15
+        colors[index] = "#ff0f00"
 
     return colors
 

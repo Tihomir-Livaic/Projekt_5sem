@@ -4,9 +4,6 @@ import PySimpleGUI as sg
 
 from implementation import *
 
-COL_COUNT = 25
-ROW_COUNT = 15
-
 def disable_enable(windows, disabled, *args):
     for arg in args:
         windows[arg].update(disabled=disabled)
@@ -26,7 +23,18 @@ def create_blue_color_dict():
 
     return colors
 
+# inicijalizacija globalnih varijabli
+DODAVANJE_ZIDOVA = False
+DODAVANJE_ELEVACIJE = False
+BIRANJE_POCETKA = False
+BIRANJE_KRAJA = False
+start = end = (-1, -1)
+elevation = 1
+color_dict = create_blue_color_dict()
+COL_COUNT = 25
+ROW_COUNT = 15
 nodes = [[1 for _ in range(COL_COUNT)] for _ in range(ROW_COUNT)]
+#
 
 menu_def = [['File', ['Load map', 'Save map']], ['Help']]
 
@@ -43,6 +51,7 @@ layout += [[sg.Text("KONFIGURACIJA ALGORITMA: "),
             sg.VerticalSeparator(),
             sg.Button("A*", disabled=True, key='-A*-'), sg.Button("Dijkstra", disabled=True, key='-DIJKSTRA-'),
             sg.Button("Reset", disabled=True, key='-RESET-')],
+            [[sg.HorizontalSeparator()]],
             [sg.Text("", key='-VRIJEME-', visible=False),
              sg.Text("" ,size=(1,2)),
             sg.Button("Pause", key='-PAUSE-', visible=False),
@@ -50,14 +59,6 @@ layout += [[sg.Text("KONFIGURACIJA ALGORITMA: "),
 layout += [[sg.Button(".", size=(4, 2), pad=(0, 0), border_width=1, metadata=1, key=(row, col))
             for col in range(COL_COUNT)] for row in range(ROW_COUNT)]
 
-# inicijalizacija nekih varijabli
-DODAVANJE_ZIDOVA = False
-DODAVANJE_ELEVACIJE = False
-BIRANJE_POCETKA = False
-BIRANJE_KRAJA = False
-start = end = (-1, -1)
-elevation = 1
-color_dict = create_blue_color_dict()
 
 window = sg.Window("Početak", layout, finalize=True)
 
@@ -83,7 +84,6 @@ while True:
 
     elif event == '-ES-':
         elevation = values['-ES-']
-        #print(elevation)
 
     elif event == '-DE-':
         if DODAVANJE_ELEVACIJE == False:
@@ -99,11 +99,9 @@ while True:
         if DODAVANJE_ZIDOVA == True and event != start and event != end:
             if nodes[event[0]][event[1]] != 0:
                 window[event].update(button_color=("black", "black"))
-                #window[event].metadata = 0
                 nodes[event[0]][event[1]] = 0
             else:
                 window[event].update(button_color=("white", color_dict[window[event].metadata]))
-                #window[event].metadata = 1 if window[event].ButtonText=="." else int(window[event].ButtonText)
                 nodes[event[0]][event[1]] = 1 if window[event].ButtonText=="." else int(window[event].ButtonText)
 
         if nodes[event[0]][event[1]] != 0:
