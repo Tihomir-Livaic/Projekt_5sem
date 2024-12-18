@@ -2,24 +2,15 @@
 import json
 import PySimpleGUI as sg
 
-from implementation import *
+from search_functions import *
 
 def disable_enable(windows, disabled, *args):
     for arg in args:
         windows[arg].update(disabled=disabled)
 
 def create_blue_color_dict():
-    colors: dict[int, string] = {}
-    colors[1] = "#283B5B"
-    colors[2] = "#243655"
-    colors[3] = "#21324F"
-    colors[4] = "#1E2E4A"
-    colors[5] = "#1A2944"
-    colors[6] = "#17253E"
-    colors[7] = "#142139"
-    colors[8] = "#101C33"
-    colors[9] = "#0D182D"
-    colors[10] = "#0A1428"
+    colors: dict[int, string] = {1: "#283B5B", 2: "#243655", 3: "#21324F", 4: "#1E2E4A", 5: "#1A2944", 6: "#17253E",
+                                 7: "#142139", 8: "#101C33", 9: "#0D182D", 10: "#0A1428"}
 
     return colors
 
@@ -73,11 +64,11 @@ while True:
     if event in (sg.WIN_CLOSED, 'Exit'):
         break
     if event == '-DZ-':
-        if DODAVANJE_ZIDOVA == False:
+        if not DODAVANJE_ZIDOVA:
             DODAVANJE_ZIDOVA = True
             disable_enable(window, True, '-DE-', '-ES-', '-CHECK-', '-OP-', '-OK-', '-DONE-')
             window['-DZ-'].update("Dodavanje gotovo")
-        elif DODAVANJE_ZIDOVA == True:
+        elif DODAVANJE_ZIDOVA:
             DODAVANJE_ZIDOVA = False
             disable_enable(window, False, '-DE-', '-ES-', '-CHECK-', '-OP-', '-OK-', '-DONE-')
             window['-DZ-'].update("Dodavanje zidova")
@@ -86,11 +77,11 @@ while True:
         elevation = values['-ES-']
 
     elif event == '-DE-':
-        if DODAVANJE_ELEVACIJE == False:
+        if not DODAVANJE_ELEVACIJE:
             DODAVANJE_ELEVACIJE = True
             disable_enable(window, True, '-DZ-', '-CHECK-', '-OP-', '-OK-', '-DONE-')
             window['-DE-'].update("Dodavanje gotovo")
-        elif DODAVANJE_ELEVACIJE == True:
+        elif DODAVANJE_ELEVACIJE:
             DODAVANJE_ELEVACIJE = False
             disable_enable(window, False, '-DZ-', '-CHECK-', '-OP-', '-OK-', '-DONE-')
             window['-DE-'].update("Dodavanje elevacije")
@@ -105,7 +96,7 @@ while True:
                 nodes[event[0]][event[1]] = 1 if window[event].ButtonText=="." else int(window[event].ButtonText)
 
         if nodes[event[0]][event[1]] != 0:
-            if DODAVANJE_ELEVACIJE == True:
+            if DODAVANJE_ELEVACIJE:
                 window[event].update(button_color=("white", color_dict[elevation]))
                 nodes[event[0]][event[1]] = round(elevation)
                 window[event].update(round(elevation) if elevation > 1 else ".")
@@ -154,7 +145,7 @@ while True:
             window[event].update("Gotovo")
 
     elif event == '-OP-':
-        if BIRANJE_POCETKA == False:
+        if not BIRANJE_POCETKA:
             disable_enable(window, True, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OK-', '-DONE-')
             BIRANJE_POCETKA = True
             window[event].update("Potvrdi početak")
@@ -164,7 +155,7 @@ while True:
             window[event].update("Odaberi početak")
 
     elif event == '-OK-':
-        if BIRANJE_KRAJA == False:
+        if not BIRANJE_KRAJA:
             disable_enable(window, True, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OP-', '-DONE-')
             BIRANJE_KRAJA = True
             window[event].update("Potvrdi kraj")
@@ -175,6 +166,7 @@ while True:
 
     elif event == '-DIJKSTRA-':
         nodes_colors, no_of_colors, path = graph_search(nodes, start, end, ROW_COUNT, COL_COUNT, window)
+        print("Number of colors: ", no_of_colors)
         if not values['-CHECK-']:
             color_graph(nodes_colors, no_of_colors, path, window)
         else:
