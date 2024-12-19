@@ -58,12 +58,35 @@ def find_neighbors(node: tuple, nodes: list, max_row: int, max_col: int) -> list
         neighbors.append((row,col-1))
     return neighbors
 
-#def heuristic(current: tuple, end: tuple):
-#
-#    return 0
+def heuristic(current: tuple, end: tuple, min_distance: int) -> float:       #početna jednostavna heuristika
+    dx = abs(current[0] - end[0])
+    dy = abs(current[1] - end[1])
+    return min_distance * (dx + dy)
 
-def graph_search(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int, coefficient, window):
+
+def find_min_distance(nodes: list, rows: int, columns: int) -> int:
+    d = 10
+    for row in range(rows):
+        for col in range(columns):
+            if nodes[row][col] < d:
+                d = nodes[row][col]
+    return d
+
+def graph_search(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int, coefficient, window) -> tuple:
     print(coefficient)
+    min_distance = find_min_distance(nodes, max_row, max_col)
+    h: int
+    g: int
+    if coefficient < 0:
+        g = 1
+        h = round(1 + coefficient, 1)
+    elif coefficient > 0:
+        h = 1
+        g = round(1 - coefficient, 1)
+    else:
+        g = h = 1
+    print(g, " ", h)
+
     hq = []
     heapq.heappush(hq, (0, (start, 1)))
     came_from: dict[tuple, tuple] = {}
@@ -89,7 +112,7 @@ def graph_search(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int
             new_cost = cost[current] + nodes[neighbor[0]][neighbor[1]]      #moze se dogoditi da se doda vec postojeci node
             if neighbor not in cost or new_cost < cost[neighbor]:
                 cost[neighbor] = new_cost
-                priority = new_cost
+                priority = g * new_cost + h * heuristic(neighbor, end, min_distance)
                 heapq.heappush(hq, (priority, (neighbor,color+1)))
                 came_from[neighbor] = current
 

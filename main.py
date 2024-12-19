@@ -35,8 +35,9 @@ layout += [[sg.Text("UREĐIVANJE MAPE: "), sg.Button("Dodavanje zidova", key='-D
            sg.Text("ELEVACIJA POLJA: "),
            sg.Slider(range=(1, 10), resolution=1, orientation='h', key='-ES-', enable_events=True),
            sg.Button("Dodaj elevaciju", key='-DE-')]]
-column = [[sg.Text("Dijkstra            A*      Greedy BFS")],
-          [sg.Slider((-1,1), resolution=0.1, orientation='h', disable_number_display=True, key='-COEFFICIENT-', disabled=True)]]
+column = [[sg.Text("Dijkstra             A*       Greedy BFS")],
+          [sg.Text("|                      |                      |", auto_size_text=True)],
+          [sg.Slider((-1,1), resolution=0.1, orientation='h', disable_number_display=True, default_value=0, key='-COEFFICIENT-', disabled=True)]]
 layout += [[sg.Text("KONFIGURACIJA ALGORITMA: "),
             sg.Checkbox("Sporije izvođenje", key='-CHECK-', enable_events=True),
             sg.Button("Odaberi početak", key='-OP-'),
@@ -172,7 +173,7 @@ while True:
 
     elif event == '-START-':
         nodes_colors, no_of_colors, found_path, path = graph_search(nodes, start, end, ROW_COUNT, COL_COUNT, values['-COEFFICIENT-'], window)
-        print("Number of colors: ", no_of_colors)
+        #print("Number of colors: ", no_of_colors)
         if not found_path:
             sg.popup("There is no path between the start and end nodes :(", title="No path found")
         else:
