@@ -2,7 +2,8 @@ import heapq
 import math
 import string
 import time
-from PySimpleGUI import timer_start, timer_stop_usec
+
+from PySimpleGUI import timer_stop_usec
 
 
 def create_orange_color_dict(no_of_colors: int) -> dict[int, string]:
@@ -96,7 +97,7 @@ def graph_search(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int
     window.refresh()
     nodes_colors: list[tuple] = []
     found_path = False
-    timer_start()
+    start_time = time.perf_counter()
 
     while len(hq)>0:
         elem = heapq.heappop(hq)[1]
@@ -116,10 +117,10 @@ def graph_search(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int
                 heapq.heappush(hq, (priority, (neighbor,color+1)))
                 came_from[neighbor] = current
 
-    vrijeme_izvodenja = timer_stop_usec()
+    stop_time = time.perf_counter()
     path = None
     if found_path:
-        window['-VRIJEME-'].update("Vrijeme izvođenja: " + str(vrijeme_izvodenja) + "ms")
+        window['-VRIJEME-'].update("Vrijeme izvođenja: " + str((stop_time - start_time) * 1000) + "ms")
         window['-VRIJEME-'].update(visible = True)
         path = reconstruct_path(came_from, start, end)
     return nodes_colors, color, found_path, path
