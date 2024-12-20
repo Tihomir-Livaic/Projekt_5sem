@@ -58,34 +58,36 @@ class GUI:
                 self.window[event].metadata = round(self.elevation)
 
             elif self.BIRANJE_POCETKA:
-                if event == self.start:
-                    if self.window[event].ButtonColor == ("black", "yellow"):
-                        self.window[event].update(button_color=("white", self.color_dict[self.window[event].metadata]))
-                        self.start = (-1, -1)
+                if event != self.end:
+                    if event == self.start:
+                        if self.window[event].ButtonColor == ("black", "yellow"):
+                            self.window[event].update(button_color=("white", self.color_dict[self.window[event].metadata]))
+                            self.start = (-1, -1)
+                        else:
+                            self.window[event].update(button_color=("black", "yellow"))
+                            self.start = event
                     else:
                         self.window[event].update(button_color=("black", "yellow"))
+                        event: tuple
+                        if self.start != (-1, -1):
+                            self.window[self.start].update(button_color=("white", self.color_dict[self.window[self.start].metadata]))
                         self.start = event
-                else:
-                    self.window[event].update(button_color=("black", "yellow"))
-                    event: tuple
-                    if self.start != (-1, -1):
-                        self.window[self.start].update(button_color=("white", self.color_dict[self.window[self.start].metadata]))
-                    self.start = event
 
             elif self.BIRANJE_KRAJA:
-                if event == self.end:
-                    if self.window[event].ButtonColor == ("black", "green"):
-                        self.window[event].update(button_color=("white", self.color_dict[self.window[event].metadata]))
-                        self.end = (-1, -1)
+                if event != self.start:
+                    if event == self.end:
+                        if self.window[event].ButtonColor == ("black", "green"):
+                            self.window[event].update(button_color=("white", self.color_dict[self.window[event].metadata]))
+                            self.end = (-1, -1)
+                        else:
+                            self.window[event].update(button_color=("black", "green"))
+                            self.end = event
                     else:
                         self.window[event].update(button_color=("black", "green"))
+                        event: tuple
+                        if self.end != (-1, -1):
+                            self.window[self.end].update(button_color=("white", self.color_dict[self.window[self.end].metadata]))
                         self.end = event
-                else:
-                    self.window[event].update(button_color=("black", "green"))
-                    event: tuple
-                    if self.end != (-1, -1):
-                        self.window[self.end].update(button_color=("white", self.color_dict[self.window[self.end].metadata]))
-                    self.end = event
 
     def done_handler(self):
         if self.start != (-1, -1) and self.end != (-1, -1):
