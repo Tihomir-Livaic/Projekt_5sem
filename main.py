@@ -1,4 +1,3 @@
-#import string
 import json
 
 from search_functions import *
@@ -97,7 +96,8 @@ while True:
 
         if nodes[event[0]][event[1]] != 0:
             if DODAVANJE_ELEVACIJE:
-                window[event].update(button_color=("white", color_dict[elevation]))
+                if event != start and event != end:
+                    window[event].update(button_color=("white", color_dict[elevation]))
                 nodes[event[0]][event[1]] = round(elevation)
                 window[event].update(round(elevation) if elevation > 1 else ".")
                 window[event].metadata = round(elevation)
