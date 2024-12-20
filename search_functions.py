@@ -3,7 +3,7 @@ import math
 import string
 import time
 import random
-#import PySimpleGUI as sg
+import PySimpleGUI as sg
 
 
 
@@ -137,15 +137,19 @@ def color_graph(nodes_colors: list, no_of_colors: int, path: list, window):
     for node in path:
         window[node].update(button_color=("black", "green"))
 
-def color_graph_pausable(nodes_colors: list, no_of_colors: int, path: list, window):
+def color_graph_pausable(nodes_colors: list, no_of_colors: int, path: list, window) -> bool:
     window['-PAUSE-'].update(visible=True)
     window['-FINISH-'].update(visible=True)
     is_paused = False
     finish = False
+    should_exit = False
     colors = create_orange_color_dict(no_of_colors)
     for elem in nodes_colors:
         while is_paused:
             event, values = window.read(timeout=10)
+            if event == sg.WIN_CLOSED:
+                should_exit = True
+                return should_exit
             if event == '-PAUSE-':
                 is_paused = False
                 window['-PAUSE-'].update("Pause")
@@ -168,6 +172,9 @@ def color_graph_pausable(nodes_colors: list, no_of_colors: int, path: list, wind
 
         if not finish:
             event, values = window.read(timeout=10)
+            if event == sg.WIN_CLOSED:
+                should_exit = True
+                return should_exit
             if event == '-FINISH-':
                 window['-PAUSE-'].update(visible=False)
                 window['-FINISH-'].update(visible=False)
@@ -181,6 +188,7 @@ def color_graph_pausable(nodes_colors: list, no_of_colors: int, path: list, wind
             window[node].update(button_color=("black", node_color))
     for node in path:
         window[node].update(button_color=("black", "green"))
+    return should_exit
 
 def reconstruct_path(came_from: dict[tuple, tuple], start: tuple, end: tuple) -> list:
     path = []

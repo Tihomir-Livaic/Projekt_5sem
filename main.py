@@ -1,8 +1,8 @@
 #import string
 import json
-import PySimpleGUI as sg
 
 from search_functions import *
+
 
 def disable_enable(windows, disabled, *args):
     for arg in args:
@@ -65,7 +65,7 @@ window = sg.Window("Početak", layout, finalize=True)
 while True:
     event, values = window.read()
     print(event, values)
-    if event in (sg.WIN_CLOSED, 'Exit'):
+    if event == sg.WIN_CLOSED:
         break
     if event == '-DZ-':
         if not DODAVANJE_ZIDOVA:
@@ -180,7 +180,9 @@ while True:
             if not values['-CHECK-']:
                 color_graph(nodes_colors, no_of_colors, path, window)
             else:
-                color_graph_pausable(nodes_colors, no_of_colors, path, window)
+                should_exit = color_graph_pausable(nodes_colors, no_of_colors, path, window)
+                if should_exit:
+                    break
             disable_enable(window, False, '-RESET-')
             disable_enable(window, True, '-DONE-', '-COEFFICIENT-', '-START-')
 
