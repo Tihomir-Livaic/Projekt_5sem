@@ -2,8 +2,9 @@ import heapq
 import math
 import string
 import time
+import random
+#import PySimpleGUI as sg
 
-from PySimpleGUI import timer_stop_usec
 
 
 def create_orange_color_dict(no_of_colors: int) -> dict[int, string]:
@@ -57,6 +58,7 @@ def find_neighbors(node: tuple, nodes: list, max_row: int, max_col: int) -> list
         neighbors.append((row,col+1))
     if col-1 >= 0 and nodes[row][col - 1]!=0:
         neighbors.append((row,col-1))
+    random.shuffle(neighbors)
     return neighbors
 
 def heuristic(current: tuple, end: tuple, min_distance: int) -> float:       #početna jednostavna heuristika
@@ -69,7 +71,7 @@ def find_min_distance(nodes: list, rows: int, columns: int) -> int:
     d = 10
     for row in range(rows):
         for col in range(columns):
-            if nodes[row][col] < d:
+            if nodes[row][col] < d and nodes[row][col] != 0:
                 d = nodes[row][col]
     return d
 
@@ -158,11 +160,11 @@ def color_graph_pausable(nodes_colors: list, no_of_colors: int, path: list, wind
         node_color = window[node].ButtonColor[1]
         window[node].update(button_color=("black", "blue"))
         window.refresh()
-        time.sleep(0.25 if not finish else 0)
+        time.sleep(1 if not finish else 0)
         for neighbor in neighbors:
             window[neighbor].update(button_color=("black", colors[color]))
         window.refresh()
-        time.sleep(0.25 if not finish else 0)
+        time.sleep(1 if not finish else 0)
 
         if not finish:
             event, values = window.read(timeout=10)
