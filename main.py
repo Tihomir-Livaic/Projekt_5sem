@@ -8,11 +8,6 @@ def disable_enable(windows, disabled, *args):
     for arg in args:
         windows[arg].update(disabled=disabled)
 
-def create_blue_color_dict():
-    colors: dict[int, string] = {1: "#283B5B", 2: "#243655", 3: "#21324F", 4: "#1E2E4A", 5: "#1A2944", 6: "#17253E",
-                                 7: "#142139", 8: "#101C33", 9: "#0D182D", 10: "#0A1428"}
-
-    return colors
 
 # inicijalizacija globalnih varijabli
 DODAVANJE_ZIDOVA = False
@@ -21,7 +16,8 @@ BIRANJE_POCETKA = False
 BIRANJE_KRAJA = False
 start = end = (-1, -1)
 elevation = 1
-color_dict = create_blue_color_dict()
+color_dict = {1: "#283B5B", 2: "#243655", 3: "#21324F", 4: "#1E2E4A", 5: "#1A2944", 6: "#17253E",
+                                 7: "#142139", 8: "#101C33", 9: "#0D182D", 10: "#0A1428"}
 COL_COUNT = 25
 ROW_COUNT = 15
 nodes = [[1 for _ in range(COL_COUNT)] for _ in range(ROW_COUNT)]

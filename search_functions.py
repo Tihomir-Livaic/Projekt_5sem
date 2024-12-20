@@ -9,41 +9,37 @@ import PySimpleGUI as sg
 
 def create_orange_color_dict(no_of_colors: int) -> dict[int, string]:
     colors: dict[int, string] = {}
-    no_of_loops = math.ceil(no_of_colors/33)
+    no_of_loops = math.ceil(no_of_colors/36)
     index = 1
     for loops in range(no_of_loops):
         g = 30
         colors[index] = "#ff0000"
         index += 1
-        colors[index] = "#ff0f00"
-        index += 1
-        for i in range(1, 17):
+        for i in range(8):
             colors[index] = "#ff" + str(hex(g)[2:]) + "00"
             index += 1
-            g += 15
-
+            g += 30
+        colors[index] = "#ffff00"
+        index += 1
         r = 240
-        for i in range(1, 16):
+        for i in range(8):
             colors[index] = "#" + str(hex(r)[2:]) + "ff00"
             index += 1
-            r -= 15
-        colors[index] = "#0fff00"
-        index += 1
+            r -= 30
         colors[index] = "#00ff00"
         index += 1
-        colors[index] = "#0fff00"
-        index += 1
-        r += 15
-        for i in range(1,17):
+        r += 30
+        for i in range(8):
             colors[index] = "#" + str(hex(r)[2:]) + "ff00"
             index += 1
-            r += 15
+            r += 30
         g = 240
-        for i in range(1, 16):
+        colors[index] = "#ffff00"
+        index += 1
+        for i in range(8):
             colors[index] = "#ff" + str(hex(g)[2:]) + "00"
             index += 1
-            g -= 15
-        colors[index] = "#ff0f00"
+            g -= 30
 
     return colors
 
