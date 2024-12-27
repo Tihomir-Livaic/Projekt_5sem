@@ -13,7 +13,7 @@ class GUI:
         self.coefficient = 0
         self.color_dict = {1: "#283B5B", 2: "#243655", 3: "#21324F", 4: "#1E2E4A", 5: "#1A2944", 6: "#17253E",
                            7: "#142139", 8: "#101C33", 9: "#0D182D", 10: "#0A1428"}
-        self.COL_COUNT = 25
+        self.COL_COUNT = 30
         self.ROW_COUNT = 15
         self.nodes = [[1 for _ in range(self.COL_COUNT)] for _ in range(self.ROW_COUNT)]
 

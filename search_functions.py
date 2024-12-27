@@ -72,7 +72,7 @@ def find_min_distance(nodes: list, rows: int, columns: int) -> int:
     return d
 
 def graph_search(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int, coefficient, window) -> tuple:
-    print(coefficient)
+    #print(coefficient)
     min_distance = find_min_distance(nodes, max_row, max_col)
     h: int
     g: int
@@ -84,7 +84,7 @@ def graph_search(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int
         g = round(1 - coefficient, 1)
     else:
         g = h = 1
-    print(g, " ", h)
+    #print(g, " ", h)
 
     hq = []
     heapq.heappush(hq, (0, (start, 1)))
