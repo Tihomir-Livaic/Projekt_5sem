@@ -20,11 +20,11 @@ class GUI:
     def dz_handler(self):
         if not self.DODAVANJE_ZIDOVA:
             self.DODAVANJE_ZIDOVA = True
-            self.disable_enable(True, '-DE-', '-ES-', '-CHECK-', '-OP-', '-OK-', '-DONE-')
+            self.disable_enable(True, '-DE-', '-ES-', '-CHECK-', '-OP-', '-OK-', '-DONE-' , '-MAP_RESET-')
             self.window['-DZ-'].update("Dodavanje gotovo")
         elif self.DODAVANJE_ZIDOVA:
             self.DODAVANJE_ZIDOVA = False
-            self.disable_enable(False, '-DE-', '-ES-', '-CHECK-', '-OP-', '-OK-', '-DONE-')
+            self.disable_enable(False, '-DE-', '-ES-', '-CHECK-', '-OP-', '-OK-', '-DONE-' , '-MAP_RESET-')
             self.window['-DZ-'].update("Dodavanje zidova")
 
     def es_handler(self, elevation):
@@ -33,11 +33,11 @@ class GUI:
     def de_handler(self):
         if not self.DODAVANJE_ELEVACIJE:
             self.DODAVANJE_ELEVACIJE = True
-            self.disable_enable(True, '-DZ-', '-CHECK-', '-OP-', '-OK-', '-DONE-')
+            self.disable_enable(True, '-DZ-', '-CHECK-', '-OP-', '-OK-', '-DONE-' , '-MAP_RESET-')
             self.window['-DE-'].update("Dodavanje gotovo")
         elif self.DODAVANJE_ELEVACIJE:
             self.DODAVANJE_ELEVACIJE = False
-            self.disable_enable(False, '-DZ-', '-CHECK-', '-OP-', '-OK-', '-DONE-')
+            self.disable_enable(False, '-DZ-', '-CHECK-', '-OP-', '-OK-', '-DONE-' , '-MAP_RESET-')
             self.window['-DE-'].update("Dodavanje elevacije")
 
     def button_press(self, event):
@@ -89,16 +89,27 @@ class GUI:
                             self.window[self.end].update(button_color=("white", self.color_dict[self.window[self.end].metadata]))
                         self.end = event
 
+    def map_reset_handler(self):
+        for row in range(self.ROW_COUNT):
+            for col in range(self.COL_COUNT):
+                self.nodes[row][col] = 1
+                self.window[(row,col)].metadata = 1
+                self.window[(row,col)].update(".")
+                self.window[(row,col)].update(button_color=("white", self.color_dict[self.window[(row,col)].metadata]))
+                self.start = (-1, -1)
+                self.end = (-1, -1)
+
+
     def done_handler(self):
         if self.start != (-1, -1) and self.end != (-1, -1):
             if self.window['-DONE-'].metadata == 0:
                 self.disable_enable(False, '-START-', '-COEFFICIENT-')
-                self.disable_enable(True, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OK-', '-OP-')
+                self.disable_enable(True, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OK-', '-OP-', '-MAP_RESET-')
                 self.window['-DONE-'].metadata = 1
                 self.window['-DONE-'].update("Povratak")
             else:
                 self.disable_enable(True, '-START-', '-COEFFICIENT-')
-                self.disable_enable(False, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OK-', '-OP-')
+                self.disable_enable(False, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OK-', '-OP-', '-MAP_RESET-')
                 self.window['-DONE-'].metadata = 0
                 self.window['-DONE-'].update("Gotovo")
         else:
@@ -106,21 +117,21 @@ class GUI:
 
     def op_handler(self):
         if not self.BIRANJE_POCETKA:
-            self.disable_enable(True, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OK-', '-DONE-')
+            self.disable_enable(True, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OK-', '-DONE-' , '-MAP_RESET-')
             self.BIRANJE_POCETKA = True
             self.window['-OP-'].update("Potvrdi početak")
         else:
-            self.disable_enable(False, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OK-', '-DONE-')
+            self.disable_enable(False, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OK-', '-DONE-' , '-MAP_RESET-')
             self.BIRANJE_POCETKA = False
             self.window['-OP-'].update("Odaberi početak")
 
     def ok_handler(self):
         if not self.BIRANJE_KRAJA:
-            self.disable_enable(True, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OP-', '-DONE-')
+            self.disable_enable(True, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OP-', '-DONE-' , '-MAP_RESET-')
             self.BIRANJE_KRAJA = True
             self.window['-OK-'].update("Potvrdi kraj")
         else:
-            self.disable_enable(False, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OP-', '-DONE-')
+            self.disable_enable(False, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OP-', '-DONE-' , '-MAP_RESET-')
             self.BIRANJE_KRAJA = False
             self.window['-OK-'].update("Odaberi kraj")
 
@@ -153,7 +164,7 @@ class GUI:
         self.window['-DONE-'].update("Gotovo")
         self.window['-DONE-'].metadata = 0
         self.window['-VRIJEME-'].update(visible=False)
-        self.disable_enable(False, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OK-', '-OP-', '-DONE-')
+        self.disable_enable(False, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OK-', '-OP-', '-DONE-' , '-MAP_RESET-')
         self.disable_enable(True, '-START-', '-RESET-', '-COEFFICIENT-')
 
     def save_handler(self):
@@ -235,6 +246,8 @@ class GUI:
                 self.button_press(event)
             elif event == '-DONE-':
                 self.done_handler()
+            elif event == '-MAP_RESET-':
+                self.map_reset_handler()
             elif event == '-OP-':
                 self.op_handler()
             elif event == '-OK-':
@@ -258,7 +271,8 @@ class GUI:
                     sg.VerticalSeparator(),
                     sg.Text("ELEVACIJA POLJA: "),
                     sg.Slider(range=(1, 10), resolution=1, orientation='h', key='-ES-', enable_events=True),
-                    sg.Button("Dodaj elevaciju", key='-DE-')]]
+                    sg.Button("Dodaj elevaciju", key='-DE-'),
+                    sg.Button("Resetiraj mapu", key='-MAP_RESET-')]]
         column = [[sg.Text("Dijkstra             A*       Greedy BFS")],
                   [sg.Text("|                      |                      |", auto_size_text=True)],
                   [sg.Slider((-1, 1), resolution=0.1, orientation='h', disable_number_display=True, default_value=0,

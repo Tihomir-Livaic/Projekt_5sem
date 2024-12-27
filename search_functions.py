@@ -1,4 +1,5 @@
 import heapq
+import itertools
 import math
 import string
 import time
@@ -87,7 +88,9 @@ def graph_search(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int
     #print(g, " ", h)
 
     hq = []
-    heapq.heappush(hq, (0, (start, 1)))
+    counter = itertools.count()
+    count = next(counter)
+    heapq.heappush(hq, [0, count, (start, 1)])
     came_from: dict[tuple, tuple] = {}
     cost: dict[tuple, float] = {start: 0}
     window[start].update("START")
@@ -98,7 +101,7 @@ def graph_search(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int
     start_time = time.perf_counter()
 
     while len(hq)>0:
-        elem = heapq.heappop(hq)[1]
+        elem = heapq.heappop(hq)[2]
         current, color = elem
 
         if current == end:
@@ -106,14 +109,18 @@ def graph_search(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int
             break
 
         neighbors: list = find_neighbors(current, nodes, max_row, max_col)
-        nodes_colors.append((current, neighbors, color))
+        neighbors_to_color = []
+        #nodes_colors.append((current, neighbors, color))
         for neighbor in neighbors:
             new_cost = cost[current] + nodes[neighbor[0]][neighbor[1]]      #moze se dogoditi da se doda vec postojeci node
             if neighbor not in cost or new_cost < cost[neighbor]:
+                neighbors_to_color.append(neighbor)
                 cost[neighbor] = new_cost
                 priority = g * new_cost + h * heuristic(neighbor, end, min_distance)
-                heapq.heappush(hq, (priority, (neighbor,color+1)))
+                count = next(counter)
+                heapq.heappush(hq, [priority, count, (neighbor,color+1)])
                 came_from[neighbor] = current
+        nodes_colors.append((current, neighbors_to_color, color))
 
     stop_time = time.perf_counter()
     path = None
@@ -178,10 +185,12 @@ def color_graph_pausable(nodes_colors: list, no_of_colors: int, path: list, wind
             elif event == '-PAUSE-':
                 is_paused = True
                 window['-PAUSE-'].update("Resume")
-            else:
-                window[node].update(button_color=("black", node_color))
+
+            window[node].update(button_color=("black", node_color))
+            window.refresh()
         else:
             window[node].update(button_color=("black", node_color))
+            window.refresh()
     for node in path:
         window[node].update(button_color=("black", "green"))
     return should_exit
