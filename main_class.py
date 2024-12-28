@@ -136,6 +136,7 @@ class GUI:
             self.window['-OK-'].update("Odaberi kraj")
 
     def start_handler(self, values) -> bool:
+        self.disable_enable(True, '-START-', '-DONE-')
         nodes_colors, no_of_colors, found_path, path = graph_search(self.nodes, self.start, self.end, self.ROW_COUNT, self.COL_COUNT, values['-COEFFICIENT-'], self.window)
         #print("Number of colors: ", no_of_colors)
         if not found_path:
@@ -147,7 +148,7 @@ class GUI:
                 should_exit = color_graph_pausable(nodes_colors, no_of_colors, path, self.window)
                 if should_exit:
                     return True
-            self.disable_enable(False, '-RESET-')
+            self.disable_enable(False, '-RESET-', '-START-', '-DONE-')
             self.disable_enable(True, '-DONE-', '-COEFFICIENT-', '-START-')
         return False
 

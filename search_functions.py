@@ -186,11 +186,9 @@ def color_graph_pausable(nodes_colors: list, no_of_colors: int, path: list, wind
                 is_paused = True
                 window['-PAUSE-'].update("Resume")
 
-            window[node].update(button_color=("black", node_color))
-            window.refresh()
-        else:
-            window[node].update(button_color=("black", node_color))
-            window.refresh()
+        window[node].update(button_color=("black", node_color))
+        window.refresh()
+        time.sleep(1 if not finish else 0)
     for node in path:
         window[node].update(button_color=("black", "green"))
     return should_exit
