@@ -2,7 +2,7 @@ import json
 from search_functions import *
 
 class GUI:
-    def __init__(self):
+    def __init__(self, num_of_rows_int: int):
         self.DODAVANJE_ZIDOVA = False
         self.DODAVANJE_ELEVACIJE = False
         self.BIRANJE_POCETKA = False
@@ -14,7 +14,7 @@ class GUI:
         self.color_dict = {1: "#283B5B", 2: "#243655", 3: "#21324F", 4: "#1E2E4A", 5: "#1A2944", 6: "#17253E",
                            7: "#142139", 8: "#101C33", 9: "#0D182D", 10: "#0A1428"}
         self.COL_COUNT = 30
-        self.ROW_COUNT = 15
+        self.ROW_COUNT = num_of_rows_int
         self.nodes = [[1 for _ in range(self.COL_COUNT)] for _ in range(self.ROW_COUNT)]
         self.window = sg.Window("A* and other graph search algorithms", self.create_layout(), finalize=True)
 
@@ -291,7 +291,7 @@ class GUI:
                     sg.popup("Map loaded successfully!")
 
                 else:
-                    sg.popup("Broj redaka i stupaca ne poklapa se")
+                    sg.popup(f"Broj redaka i stupaca ne poklapa se,\ntrenutni su {self.ROW_COUNT} {self.COL_COUNT}, iz datoteke su {len(json_nodes)} {len(json_nodes[1])}")
             except Exception as e:
                 sg.popup_error(f"Failed to load file: {e}")
 
@@ -300,7 +300,30 @@ class GUI:
             self.window[arg].update(disabled=disabled)
 
 def main():
-    gui = GUI()
+    num_of_rows = sg.popup_get_text(
+        message="Upišite broj redova\n(preporuka je između 10 i 15, ovisi o veličini ekrana):", default_text="15")
+    if num_of_rows is None:
+        return
+
+    while True:
+        try:
+            num_of_rows_int = int(num_of_rows)
+            if num_of_rows_int <= 0 or num_of_rows_int > 20:
+                num_of_rows = sg.popup_get_text(message="Upišite broj veći od nule i manji od 20:",
+                                                default_text="15")
+                if num_of_rows is None:
+                    return
+                continue
+            break
+        except:
+            num_of_rows = sg.popup_get_text(message="Upišite cijeli broj:",
+                                            default_text="15")
+            if num_of_rows is None:
+                return
+
+    gui = GUI(num_of_rows_int)
     gui.render()
+
+    exit()
 
 main()
