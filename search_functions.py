@@ -7,10 +7,9 @@ import random
 import PySimpleGUI as sg
 
 
-
 def create_orange_color_dict(no_of_colors: int) -> dict[int, string]:
     colors: dict[int, string] = {}
-    no_of_loops = math.ceil(no_of_colors/36)
+    no_of_loops = math.ceil(no_of_colors/29)
     index = 1
     for loops in range(no_of_loops):
         g = 30
@@ -72,20 +71,18 @@ def find_min_distance(nodes: list, rows: int, columns: int) -> int:
                 d = nodes[row][col]
     return d
 
-def graph_search(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int, coefficient, window) -> tuple:
-    #print(coefficient)
+def graph_search(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int, coefficient: float, window) -> tuple:
     min_distance = find_min_distance(nodes, max_row, max_col)
-    h: int
-    g: int
+    h: float
+    g: float
     if coefficient < 0:
         g = 1
-        h = round(1 + coefficient, 1)
+        h = 1 + coefficient
     elif coefficient > 0:
         h = 1
-        g = round(1 - coefficient, 1)
+        g = 1 - coefficient
     else:
         g = h = 1
-    #print(g, " ", h)
 
     hq = []
     counter = itertools.count()
@@ -110,9 +107,8 @@ def graph_search(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int
 
         neighbors: list = find_neighbors(current, nodes, max_row, max_col)
         neighbors_to_color = []
-        #nodes_colors.append((current, neighbors, color))
         for neighbor in neighbors:
-            new_cost = cost[current] + nodes[neighbor[0]][neighbor[1]]      #moze se dogoditi da se doda vec postojeci node
+            new_cost = cost[current] + nodes[neighbor[0]][neighbor[1]]
             if neighbor not in cost or new_cost < cost[neighbor]:
                 neighbors_to_color.append(neighbor)
                 cost[neighbor] = new_cost
@@ -167,11 +163,11 @@ def color_graph_pausable(nodes_colors: list, no_of_colors: int, path: list, wind
         node_color = window[node].ButtonColor[1]
         window[node].update(button_color=("black", "blue"))
         window.refresh()
-        time.sleep(1 if not finish else 0)
+        time.sleep(0.5 if not finish else 0)
         for neighbor in neighbors:
             window[neighbor].update(button_color=("black", colors[color]))
         window.refresh()
-        time.sleep(1 if not finish else 0)
+        time.sleep(0.5 if not finish else 0)
 
         if not finish:
             event, values = window.read(timeout=10)
@@ -188,7 +184,7 @@ def color_graph_pausable(nodes_colors: list, no_of_colors: int, path: list, wind
 
         window[node].update(button_color=("black", node_color))
         window.refresh()
-        time.sleep(1 if not finish else 0)
+        time.sleep(0.5 if not finish else 0)
     for node in path:
         window[node].update(button_color=("black", "green"))
     return should_exit

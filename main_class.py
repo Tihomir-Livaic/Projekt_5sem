@@ -16,6 +16,73 @@ class GUI:
         self.COL_COUNT = 30
         self.ROW_COUNT = 15
         self.nodes = [[1 for _ in range(self.COL_COUNT)] for _ in range(self.ROW_COUNT)]
+        self.window = sg.Window("A* and other graph search algorithms", self.create_layout(), finalize=True)
+
+    def render(self):
+        while True:
+            event, values = self.window.read()
+            print(event, values)
+            if event == sg.WIN_CLOSED:
+                break
+            elif event == '-DZ-':
+                self.dz_handler()
+            elif event == '-ES-':
+                self.es_handler(values['-ES-'])
+            elif event == '-DE-':
+                self.de_handler()
+            elif isinstance(event, tuple):
+                self.node_button_press(event)
+            elif event == '-DONE-':
+                self.done_handler()
+            elif event == '-MAP_RESET-':
+                self.map_reset_handler()
+            elif event == '-OP-':
+                self.op_handler()
+            elif event == '-OK-':
+                self.ok_handler()
+            elif event == '-START-':
+                if self.start_handler(values):
+                    break
+            elif event == '-RESET-':
+                self.reset_handler()
+            elif event == 'Save map':
+                self.save_handler()
+            elif event == 'Load map':
+                self.load_handler()
+        self.window.close()
+
+    def create_layout(self) -> list:
+        menu_def = [['File', ['Load map', 'Save map']], ['Help']]
+
+        layout = [[sg.Menu(menu_def, key="-MENU-")]]
+        layout += [[sg.Text("UREĐIVANJE MAPE: "), sg.Button("Dodavanje zidova", key='-DZ-', size=(13, None)),
+                    sg.VerticalSeparator(),
+                    sg.Text("ELEVACIJA POLJA: "),
+                    sg.Slider(range=(1, 10), resolution=1, orientation='h', key='-ES-', enable_events=True),
+                    sg.Button("Dodaj elevaciju", key='-DE-', size=(12, None)),
+                    sg.Button("Resetiraj mapu", key='-MAP_RESET-', size=(12, None))]]
+        column = [[sg.Text("Dijkstra             A*       Greedy BFS")],
+                  [sg.Text("|                      |                      |", auto_size_text=True)],
+                  [sg.Slider((-1, 1), resolution=0.1, orientation='h', disable_number_display=True, default_value=0,
+                             key='-COEFFICIENT-', disabled=True)]]
+        layout += [[sg.Text("KONFIGURACIJA ALGORITMA: "),
+                    sg.Checkbox("Sporije izvođenje", key='-CHECK-', enable_events=True),
+                    sg.Button("Odaberi početak", key='-OP-', size=(12, None)),
+                    sg.Button("Odaberi kraj", key='-OK-', size=(10, None)),
+                    sg.Button("Gotovo", key='-DONE-', metadata=0, size=(7, None)),
+                    sg.VerticalSeparator(),
+                    sg.Column(column, element_justification='center'),
+                    sg.Button("Start", disabled=True, key='-START-'),
+                    sg.Button("Reset", disabled=True, key='-RESET-')],
+                   [[sg.HorizontalSeparator()]],
+                   [sg.Text("", key='-VRIJEME-', visible=False),
+                    sg.Text("", size=(1, 2)),
+                    sg.Button("Pause", key='-PAUSE-', visible=False),
+                    sg.Button("Finish", key='-FINISH-', visible=False)]]
+        layout += [[sg.Button(".", size=(4, 2), pad=(0, 0), border_width=1, metadata=1, key=(row, col))
+                    for col in range(self.COL_COUNT)] for row in range(self.ROW_COUNT)]
+
+        return layout
 
     def dz_handler(self):
         if not self.DODAVANJE_ZIDOVA:
@@ -40,7 +107,7 @@ class GUI:
             self.disable_enable(False, '-DZ-', '-CHECK-', '-OP-', '-OK-', '-DONE-' , '-MAP_RESET-')
             self.window['-DE-'].update("Dodavanje elevacije")
 
-    def button_press(self, event):
+    def node_button_press(self, event):
         if self.DODAVANJE_ZIDOVA == True and event != self.start and event != self.end:
             if self.nodes[event[0]][event[1]] != 0:
                 self.window[event].update(button_color=("black", "black"))
@@ -99,7 +166,6 @@ class GUI:
                 self.start = (-1, -1)
                 self.end = (-1, -1)
 
-
     def done_handler(self):
         if self.start != (-1, -1) and self.end != (-1, -1):
             if self.window['-DONE-'].metadata == 0:
@@ -138,7 +204,6 @@ class GUI:
     def start_handler(self, values) -> bool:
         self.disable_enable(True, '-START-', '-DONE-')
         nodes_colors, no_of_colors, found_path, path = graph_search(self.nodes, self.start, self.end, self.ROW_COUNT, self.COL_COUNT, values['-COEFFICIENT-'], self.window)
-        #print("Number of colors: ", no_of_colors)
         if not found_path:
             sg.popup("There is no path between the start and end nodes :(", title="No path found")
         else:
@@ -230,74 +295,7 @@ class GUI:
             except Exception as e:
                 sg.popup_error(f"Failed to load file: {e}")
 
-    def render(self):
-        self.window = sg.Window("Početak", self.create_layout(), finalize=True)
-        while True:
-            event, values = self.window.read()
-            print(event, values)
-            if event == sg.WIN_CLOSED:
-                break
-            elif event == '-DZ-':
-                self.dz_handler()
-            elif event == '-ES-':
-                self.es_handler(values['-ES-'])
-            elif event == '-DE-':
-                self.de_handler()
-            elif isinstance(event, tuple):
-                self.button_press(event)
-            elif event == '-DONE-':
-                self.done_handler()
-            elif event == '-MAP_RESET-':
-                self.map_reset_handler()
-            elif event == '-OP-':
-                self.op_handler()
-            elif event == '-OK-':
-                self.ok_handler()
-            elif event == '-START-':
-                if self.start_handler(values):
-                    break
-            elif event == '-RESET-':
-                self.reset_handler()
-            elif event == 'Save map':
-                self.save_handler()
-            elif event == 'Load map':
-                self.load_handler()
-        self.window.close()
-
-    def create_layout(self) -> list:
-        menu_def = [['File', ['Load map', 'Save map']], ['Help']]
-
-        layout = [[sg.Menu(menu_def, key="-MENU-")]]
-        layout += [[sg.Text("UREĐIVANJE MAPE: "), sg.Button("Dodavanje zidova", key='-DZ-'),
-                    sg.VerticalSeparator(),
-                    sg.Text("ELEVACIJA POLJA: "),
-                    sg.Slider(range=(1, 10), resolution=1, orientation='h', key='-ES-', enable_events=True),
-                    sg.Button("Dodaj elevaciju", key='-DE-'),
-                    sg.Button("Resetiraj mapu", key='-MAP_RESET-')]]
-        column = [[sg.Text("Dijkstra             A*       Greedy BFS")],
-                  [sg.Text("|                      |                      |", auto_size_text=True)],
-                  [sg.Slider((-1, 1), resolution=0.1, orientation='h', disable_number_display=True, default_value=0,
-                             key='-COEFFICIENT-', disabled=True)]]
-        layout += [[sg.Text("KONFIGURACIJA ALGORITMA: "),
-                    sg.Checkbox("Sporije izvođenje", key='-CHECK-', enable_events=True),
-                    sg.Button("Odaberi početak", key='-OP-'),
-                    sg.Button("Odaberi kraj", key='-OK-'),
-                    sg.Button("Gotovo", key='-DONE-', metadata=0, size=(7, None)),
-                    sg.VerticalSeparator(),
-                    sg.Column(column, element_justification='center'),
-                    sg.Button("Start", disabled=True, key='-START-'),
-                    sg.Button("Reset", disabled=True, key='-RESET-')],
-                   [[sg.HorizontalSeparator()]],
-                   [sg.Text("", key='-VRIJEME-', visible=False),
-                    sg.Text("", size=(1, 2)),
-                    sg.Button("Pause", key='-PAUSE-', visible=False),
-                    sg.Button("Finish", key='-FINISH-', visible=False)]]
-        layout += [[sg.Button(".", size=(4, 2), pad=(0, 0), border_width=1, metadata=1, key=(row, col))
-                    for col in range(self.COL_COUNT)] for row in range(self.ROW_COUNT)]
-
-        return layout
-
-    def disable_enable(self, disabled: bool, *args):
+    def disable_enable(self, disabled: bool, *args: string):
         for arg in args:
             self.window[arg].update(disabled=disabled)
 
