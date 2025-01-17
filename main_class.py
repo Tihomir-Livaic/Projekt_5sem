@@ -3,19 +3,18 @@ from search_functions import *
 
 class GUI:
     def __init__(self, num_of_rows_int: int):
-        self.DODAVANJE_ZIDOVA = False
-        self.DODAVANJE_ELEVACIJE = False
-        self.BIRANJE_POCETKA = False
-        self.BIRANJE_KRAJA = False
-        self.start = (-1, -1)
-        self.end = (-1, -1)
-        self.elevation = 1
-        self.coefficient = 0
-        self.color_dict = {1: "#283B5B", 2: "#243655", 3: "#21324F", 4: "#1E2E4A", 5: "#1A2944", 6: "#17253E",
+        self.DODAVANJE_ZIDOVA: bool = False
+        self.DODAVANJE_ELEVACIJE: bool = False
+        self.BIRANJE_POCETKA: bool = False
+        self.BIRANJE_KRAJA: bool = False
+        self.start: tuple = (-1, -1)
+        self.end: tuple = (-1, -1)
+        self.elevation: int = 1
+        self.color_dict: dict[int, string] = {1: "#283B5B", 2: "#243655", 3: "#21324F", 4: "#1E2E4A", 5: "#1A2944", 6: "#17253E",
                            7: "#142139", 8: "#101C33", 9: "#0D182D", 10: "#0A1428"}
-        self.COL_COUNT = 30
-        self.ROW_COUNT = num_of_rows_int
-        self.nodes = [[1 for _ in range(self.COL_COUNT)] for _ in range(self.ROW_COUNT)]
+        self.COL_COUNT: int = 30
+        self.ROW_COUNT: int = num_of_rows_int
+        self.nodes: list = [[1 for _ in range(self.COL_COUNT)] for _ in range(self.ROW_COUNT)]
         self.window = sg.Window("A* and other graph search algorithms", self.create_layout(), finalize=True)
 
     def render(self):
@@ -31,7 +30,7 @@ class GUI:
             elif event == '-DE-':
                 self.de_handler()
             elif isinstance(event, tuple):
-                self.node_button_press(event)
+                self.node_button_press_handler(event)
             elif event == '-DONE-':
                 self.done_handler()
             elif event == '-MAP_RESET-':
@@ -107,7 +106,7 @@ class GUI:
             self.disable_enable(False, '-DZ-', '-CHECK-', '-OP-', '-OK-', '-DONE-' , '-MAP_RESET-')
             self.window['-DE-'].update("Dodavanje elevacije")
 
-    def node_button_press(self, event):
+    def node_button_press_handler(self, event):
         if self.DODAVANJE_ZIDOVA == True and event != self.start and event != self.end:
             if self.nodes[event[0]][event[1]] != 0:
                 self.window[event].update(button_color=("black", "black"))
@@ -213,7 +212,7 @@ class GUI:
                 should_exit = color_graph_pausable(nodes_colors, no_of_colors, path, self.window)
                 if should_exit:
                     return True
-            self.disable_enable(False, '-RESET-', '-START-', '-DONE-')
+            self.disable_enable(False, '-RESET-')
             self.disable_enable(True, '-DONE-', '-COEFFICIENT-', '-START-')
         return False
 
