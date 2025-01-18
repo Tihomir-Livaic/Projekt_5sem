@@ -58,7 +58,7 @@ class GUI:
                     sg.VerticalSeparator(),
                     sg.Text("ELEVACIJA POLJA: "),
                     sg.Slider(range=(1, 10), resolution=1, orientation='h', key='-ES-', enable_events=True),
-                    sg.Button("Dodaj elevaciju", key='-DE-', size=(12, None)),
+                    sg.Button("Dodavanje elevacije", key='-DE-', size=(15, None)),
                     sg.Button("Resetiraj mapu", key='-MAP_RESET-', size=(12, None))]]
         column = [[sg.Text("Dijkstra             A*       Greedy BFS")],
                   [sg.Text("|                      |                      |", auto_size_text=True)],
@@ -93,7 +93,7 @@ class GUI:
             self.disable_enable(False, '-DE-', '-ES-', '-CHECK-', '-OP-', '-OK-', '-DONE-' , '-MAP_RESET-')
             self.window['-DZ-'].update("Dodavanje zidova")
 
-    def es_handler(self, elevation):
+    def es_handler(self, elevation: int):
         self.elevation = elevation
 
     def de_handler(self):
