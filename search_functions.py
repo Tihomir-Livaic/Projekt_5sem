@@ -75,26 +75,21 @@ def graph_search(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int
     min_distance = find_min_distance(nodes, max_row, max_col)
     h: float
     g: float
-    if coefficient < 0:
-        g = 1
-        h = 1 + coefficient
-    elif coefficient > 0:
-        h = 1
-        g = 1 - coefficient
-    else:
-        g = h = 1
-
+    g = 1 - coefficient
+    h = coefficient
+    closed = set()
+    closed_counter = 0
+    new_path_counter = 0
     hq = []
-    counter = itertools.count()
+    counter = itertools.count(start = 10000, step = -1)
     count = next(counter)
     heapq.heappush(hq, [0, count, (start, 1)])
     came_from: dict[tuple, tuple] = {}
     cost: dict[tuple, float] = {start: 0}
-    window[start].update("START")
-    window[end].update("STOP")
     window.refresh()
     nodes_colors: list[tuple] = []
     found_path = False
+    misses = 0
     start_time = time.perf_counter()
 
     while len(hq)>0:
@@ -104,25 +99,41 @@ def graph_search(nodes: list, start:tuple, end:tuple, max_row: int, max_col: int
         if current == end:
             found_path = True
             break
+        if current in closed:
+            closed_counter = closed_counter + 1
+            continue
+        closed.add(current)
 
         neighbors: list = find_neighbors(current, nodes, max_row, max_col)
         neighbors_to_color = []
         for neighbor in neighbors:
             new_cost = cost[current] + nodes[neighbor[0]][neighbor[1]]
             if neighbor not in cost or new_cost < cost[neighbor]:
+                if neighbor in cost and new_cost < cost[neighbor]:
+                    new_path_counter = new_path_counter + 1
                 neighbors_to_color.append(neighbor)
                 cost[neighbor] = new_cost
                 priority = g * new_cost + h * heuristic(neighbor, end, min_distance)
                 count = next(counter)
                 heapq.heappush(hq, [priority, count, (neighbor,color+1)])
                 came_from[neighbor] = current
+                if neighbor in closed:
+                    closed.remove(neighbor)
+            else:
+                misses = misses + 1
         nodes_colors.append((current, neighbors_to_color, color))
 
     stop_time = time.perf_counter()
+    print("misses: ", misses)
+    print("closed_counter: ",closed_counter)
+    print("new_path_counter: ",new_path_counter)
     path = None
     if found_path:
-        window['-VRIJEME-'].update("Vrijeme izvođenja: " + str((stop_time - start_time) * 1000) + "ms")
-        window['-VRIJEME-'].update(visible = True)
+        #print(cost[end])
+        window['-TIME-'].update("Vrijeme izvođenja: " + str((stop_time - start_time) * 1000) + "ms")
+        window['-TIME-'].update(visible = True)
+        window['-LENGTH-'].update("Duljina puta: " + str(cost[end]))
+        window['-LENGTH-'].update(visible=True)
         path = reconstruct_path(came_from, start, end)
     return nodes_colors, color, found_path, path
 

@@ -12,7 +12,7 @@ class GUI:
         self.elevation: int = 1
         self.color_dict: dict[int, string] = {1: "#283B5B", 2: "#243655", 3: "#21324F", 4: "#1E2E4A", 5: "#1A2944", 6: "#17253E",
                            7: "#142139", 8: "#101C33", 9: "#0D182D", 10: "#0A1428"}
-        self.COL_COUNT: int = 30
+        self.COL_COUNT: int = 50
         self.ROW_COUNT: int = num_of_rows_int
         self.nodes: list = [[1 for _ in range(self.COL_COUNT)] for _ in range(self.ROW_COUNT)]
         self.window = sg.Window("A* and other graph search algorithms", self.create_layout(), finalize=True)
@@ -62,7 +62,7 @@ class GUI:
                     sg.Button("Resetiraj mapu", key='-MAP_RESET-', size=(12, None))]]
         column = [[sg.Text("Dijkstra             A*       Greedy BFS")],
                   [sg.Text("|                      |                      |", auto_size_text=True)],
-                  [sg.Slider((-1, 1), resolution=0.1, orientation='h', disable_number_display=True, default_value=0,
+                  [sg.Slider((0, 1), resolution=0.05, orientation='h', disable_number_display=True, default_value=0.5,
                              key='-COEFFICIENT-', disabled=True)]]
         layout += [[sg.Text("KONFIGURACIJA ALGORITMA: "),
                     sg.Checkbox("Sporije izvođenje", key='-CHECK-', enable_events=True),
@@ -74,11 +74,13 @@ class GUI:
                     sg.Button("Start", disabled=True, key='-START-'),
                     sg.Button("Reset", disabled=True, key='-RESET-')],
                    [[sg.HorizontalSeparator()]],
-                   [sg.Text("", key='-VRIJEME-', visible=False),
+                   [sg.Text("", key='-TIME-', visible=False),
+                    sg.Text("", size=(1, 2)),
+                    sg.Text("", key='-LENGTH-', visible=False),
                     sg.Text("", size=(1, 2)),
                     sg.Button("Pause", key='-PAUSE-', visible=False),
                     sg.Button("Finish", key='-FINISH-', visible=False)]]
-        layout += [[sg.Button(".", size=(4, 2), pad=(0, 0), border_width=1, metadata=1, key=(row, col))
+        layout += [[sg.Button(".", size=(2, 1), pad=(0, 0), border_width=1, metadata=1, key=(row, col))
                     for col in range(self.COL_COUNT)] for row in range(self.ROW_COUNT)]
 
         return layout
@@ -202,6 +204,8 @@ class GUI:
 
     def start_handler(self, values) -> bool:
         self.disable_enable(True, '-START-', '-DONE-')
+        self.window[self.start].update("S")
+        self.window[self.end].update("F")
         nodes_colors, no_of_colors, found_path, path = graph_search(self.nodes, self.start, self.end, self.ROW_COUNT, self.COL_COUNT, values['-COEFFICIENT-'], self.window)
         if not found_path:
             sg.popup("There is no path between the start and end nodes :(", title="No path found")
@@ -228,7 +232,8 @@ class GUI:
         self.window[self.end].update("." if self.window[self.end].metadata == 1 else self.window[self.end].metadata)
         self.window['-DONE-'].update("Gotovo")
         self.window['-DONE-'].metadata = 0
-        self.window['-VRIJEME-'].update(visible=False)
+        self.window['-TIME-'].update(visible=False)
+        self.window['-LENGTH-'].update(visible=False)
         self.disable_enable(False, '-DE-', '-ES-', '-DZ-', '-CHECK-', '-OK-', '-OP-', '-DONE-' , '-MAP_RESET-')
         self.disable_enable(True, '-START-', '-RESET-', '-COEFFICIENT-')
 
@@ -300,14 +305,14 @@ class GUI:
 
 def main():
     num_of_rows = sg.popup_get_text(
-        message="Upišite broj redova\n(preporuka je između 10 i 15, ovisi o veličini ekrana):", default_text="15")
+        message="Upišite broj redova\n(preporuka je između 20 i 30, ovisi o veličini ekrana):", default_text="25")
     if num_of_rows is None:
         return
 
     while True:
         try:
             num_of_rows_int = int(num_of_rows)
-            if num_of_rows_int <= 0 or num_of_rows_int > 20:
+            if num_of_rows_int <= 0 or num_of_rows_int > 30:
                 num_of_rows = sg.popup_get_text(message="Upišite broj veći od nule i manji od 20:",
                                                 default_text="15")
                 if num_of_rows is None:
